@@ -117,30 +117,46 @@
         this.overlay.remove();
       }
       
-      // Fabric's exact overlay approach
+      // EXACT FABRIC OVERLAY - Copy Fabric's precise styling
       this.overlay = document.createElement('div');
       this.overlay.className = 'tq_overlay';
-      this.overlay.style.display = 'block';
-      this.overlay.style.cursor = 'crosshair';
-      this.overlay.style.pointerEvents = 'all';
-      this.overlay.style.position = 'fixed';
-      this.overlay.style.top = '0';
-      this.overlay.style.left = '0';
-      this.overlay.style.width = '100vw';
-      this.overlay.style.height = '100vh';
-      this.overlay.style.zIndex = '2147483647';
-      this.overlay.style.background = 'rgba(0, 0, 0, 0.1)';
+      this.overlay.style.cssText = `
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 2147483647 !important;
+        pointer-events: all !important;
+        cursor: crosshair !important;
+        background: rgba(24, 24, 27, 0.4) !important;
+        backdrop-filter: blur(2px) !important;
+        -webkit-backdrop-filter: blur(2px) !important;
+      `;
       
-      // Selection box
+      // EXACT FABRIC SELECTION BOX - Match Fabric's selection styling
       this.selectionBox = document.createElement('div');
-      this.selectionBox.style.position = 'absolute';
-      this.selectionBox.style.border = '2px dashed #007cff';
-      this.selectionBox.style.background = 'rgba(0, 124, 255, 0.1)';
-      this.selectionBox.style.pointerEvents = 'none';
-      this.selectionBox.style.display = 'none';
+      this.selectionBox.style.cssText = `
+        position: absolute !important;
+        border: 2px solid #3b82f6 !important;
+        background: rgba(59, 130, 246, 0.1) !important;
+        border-radius: 4px !important;
+        pointer-events: none !important;
+        display: none !important;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
+      `;
       
       this.overlay.appendChild(this.selectionBox);
       document.body.appendChild(this.overlay);
+      
+      // EXACT FABRIC BEHAVIOR - Add subtle fade-in animation
+      this.overlay.style.opacity = '0';
+      this.overlay.style.transition = 'opacity 0.2s ease';
+      setTimeout(() => {
+        if (this.overlay) {
+          this.overlay.style.opacity = '1';
+        }
+      }, 10);
     }
 
     enableScreenshotSelection() {
