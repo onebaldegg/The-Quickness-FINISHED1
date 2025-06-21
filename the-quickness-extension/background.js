@@ -21,23 +21,59 @@ function downloadPDFToFolder(pdfDataArray, filename) {
     const base64 = btoa(binary);
     const dataUrl = `data:application/pdf;base64,${base64}`;
     
-    // Download to THE QUICKNESS folder (auto-creates if doesn't exist)
+    // FIXED AUTO-SAVING: Force download to THE QUICKNESS folder without prompts
     chrome.downloads.download({
       url: dataUrl,
       filename: `THE QUICKNESS/${filename}`,
-      saveAs: false,  // Don't prompt user - auto-save
+      saveAs: false,  // Critical: No user prompt
       conflictAction: 'uniquify'  // Auto-rename if file exists
     }, (downloadId) => {
       if (chrome.runtime.lastError) {
         console.error('Download failed:', chrome.runtime.lastError);
-        // Fallback: try without folder path
-        chrome.downloads.download({
-          url: dataUrl,
-          filename: filename,
-          saveAs: false
-        });
+        
+        // Enhanced fallback: Try different approaches
+        const fallbackOptions = [
+          // Try without folder path
+          { filename: filename, saveAs: false },
+          // Try with different folder syntax
+          { filename: `Downloads/THE QUICKNESS/${filename}`, saveAs: false },
+          // Last resort with user prompt
+          { filename: `THE QUICKNESS/${filename}`, saveAs: true }
+        ];
+        
+        let fallbackIndex = 0;
+        function tryFallback() {
+          if (fallbackIndex < fallbackOptions.length) {
+            const options = { ...fallbackOptions[fallbackIndex], url: dataUrl };
+            chrome.downloads.download(options, (fallbackDownloadId) => {
+              if (chrome.runtime.lastError) {
+                console.error(`Fallback ${fallbackIndex + 1} failed:`, chrome.runtime.lastError);
+                fallbackIndex++;
+                tryFallback();
+              } else {
+                console.log(`PDF saved via fallback ${fallbackIndex + 1}:`, fallbackDownloadId);
+              }
+            });
+          } else {
+            console.error('All download methods failed');
+          }
+        }
+        
+        tryFallback();
       } else {
-        console.log('PDF saved to Downloads/THE QUICKNESS/', downloadId);
+        console.log('PDF successfully auto-saved to Downloads/THE QUICKNESS/:', downloadId);
+        
+        // Send success message back to content script
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          if (tabs[0]) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+              action: 'downloadSuccess',
+              filename: filename
+            }).catch(() => {
+              // Ignore if content script not available
+            });
+          }
+        });
       }
     });
   } catch (error) {
