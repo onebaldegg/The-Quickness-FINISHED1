@@ -382,6 +382,9 @@
 
     clearHoverHighlight() {
       if (this.hoveredElement) {
+        this.hoveredElement.style.outline = '';
+        this.hoveredElement.style.outlineOffset = '';
+        this.hoveredElement.style.backgroundColor = '';
         this.hoveredElement.classList.remove('tq-hover-highlight');
         this.hoveredElement = null;
       }
