@@ -22,7 +22,7 @@
 
 ### Test Screenshot Capture
 1. Go to any webpage (e.g., https://google.com)
-2. Press `Ctrl+Shift+S`
+2. Press `Ctrl+Alt+Q`
 3. You should see a crosshair cursor
 4. Click and drag to select an area
 5. Add a note and click "Save PDF"
@@ -30,13 +30,13 @@
 
 ### Test Hover Capture
 1. Go to a webpage with images or text
-2. Press `Ctrl+Shift+C`
+2. Press `Ctrl+Alt+W`
 3. Hover over images or text - they should highlight in orange
 4. Click on a highlighted element
 5. Add a note and save the PDF
 
 ### Test Quick Notes
-1. On any webpage, press `Ctrl+Shift+N`
+1. On any webpage, press `Ctrl+Alt+E`
 2. Type a note in the popup
 3. Click "Save PDF"
 4. The PDF should contain the URL and your note
