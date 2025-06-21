@@ -106,14 +106,27 @@
 
     async waitForLibraries() {
       let attempts = 0;
+      console.log('Waiting for libraries to load...');
+      
       while ((!window.jspdf || !window.html2canvas) && attempts < 100) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
+        
+        if (attempts % 10 === 0) {
+          console.log(`Library loading attempt ${attempts}/100...`);
+          console.log('jsPDF available:', !!window.jspdf);
+          console.log('html2canvas available:', !!window.html2canvas);
+        }
       }
       
       if (window.jspdf && window.html2canvas) {
         this.librariesLoaded = true;
-        console.log('Libraries ready');
+        console.log('✅ Libraries loaded successfully');
+        console.log('jsPDF version:', window.jspdf?.version || 'unknown');
+      } else {
+        console.error('❌ Libraries failed to load after 10 seconds');
+        console.log('jsPDF available:', !!window.jspdf);
+        console.log('html2canvas available:', !!window.html2canvas);
       }
     }
 
