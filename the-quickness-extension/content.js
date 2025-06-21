@@ -21,6 +21,7 @@
       this.hoveredElement = null;
       this.capturedData = null;
       this.modal = null;
+      this.librariesLoaded = false;
       
       this.init();
     }
@@ -29,6 +30,36 @@
       console.log('THE QUICKNESS extension initialized');
       this.createOverlay();
       this.bindEvents();
+      this.loadLibraries();
+    }
+
+    async loadLibraries() {
+      try {
+        // Load jsPDF
+        if (!window.jspdf) {
+          await this.loadScript(chrome.runtime.getURL('jspdf.umd.min.js'));
+        }
+        
+        // Load html2canvas
+        if (!window.html2canvas) {
+          await this.loadScript(chrome.runtime.getURL('html2canvas.min.js'));
+        }
+        
+        this.librariesLoaded = true;
+        console.log('Libraries loaded successfully');
+      } catch (error) {
+        console.error('Failed to load libraries:', error);
+      }
+    }
+
+    loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
     }
 
     createOverlay() {
