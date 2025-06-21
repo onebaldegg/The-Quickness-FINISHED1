@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>THE QUICKNESS Extension Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+    }
+    
+    .test-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .test-description {
+      margin-bottom: 15px;
+      color: #555;
+    }
+    
+    .test-button {
+      background: #007cff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .test-button:hover {
+      background: #0056b3;
+    }
+    
+    .result-area {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      min-height: 50px;
+      display: none;
+    }
+    
+    .popup-preview {
+      width: 300px;
+      min-height: 200px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0 auto;
+      background: #b885d8;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo-placeholder {
+      width: 200px;
+      height: 60px;
+      margin: 0 auto 5px;
+      background: #9c6bc1;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .subtitle {
+      font-size: 12px;
+      color: #333;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .shortcuts {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .shortcuts-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #333;
+    }
+    
+    .shortcut-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .shortcut-item:last-child {
+      border-bottom: none;
+    }
+    
+    .shortcut-desc {
+      font-size: 12px;
+      color: #555;
+    }
+    
+    .shortcut-key {
+      font-size: 11px;
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #495057;
+    }
+    
+    .status {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+    }
+    
+    .status-text {
+      font-size: 13px;
+      color: #28a745;
+      font-weight: 500;
+    }
+    
+    .help-text {
+      font-size: 11px;
+      color: #666;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    
+    .version {
+      text-align: center;
+      font-size: 10px;
+      color: #333;
+      margin-top: 16px;
+      font-weight: 500;
+    }
+    
+    .demo-area {
+      margin-top: 30px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      position: relative;
+    }
+    
+    .demo-content {
+      min-height: 200px;
+      position: relative;
+    }
+    
+    .demo-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(24, 24, 27, 0.4);
+      backdrop-filter: blur(2px);
+      display: none;
+      z-index: 10;
+    }
+    
+    .demo-selection {
+      position: absolute;
+      border: 2px solid #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 4px;
+      display: none;
+      z-index: 11;
+    }
+    
+    .demo-element {
+      padding: 15px;
+      margin: 10px 0;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    
+    .demo-element.highlighted {
+      outline: 2px solid #f59e0b;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+      background-color: rgba(245, 158, 11, 0.05);
+    }
+    
+    .demo-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      min-width: 400px;
+      max-width: 600px;
+      display: none;
+    }
+    
+    .demo-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+      display: none;
+    }
+    
+    .demo-success {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 101;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>THE QUICKNESS Extension Test</h1>
+    
+    <div class="test-section">
+      <div class="test-title">1. Extension Popup Interface</div>
+      <div class="test-description">
+        This shows how the extension popup looks when clicking the extension icon in Chrome.
+      </div>
+      <button class="test-button" id="show-popup">Show Popup Interface</button>
+      <div class="result-area" id="popup-result">
+        <div class="popup-preview">
+          <div class="header">
+            <div class="logo-placeholder">THE QUICKNESS</div>
+            <div class="subtitle">Quick Capture & Notes</div>
+          </div>
+          
+          <div class="shortcuts">
+            <div class="shortcuts-title">Keyboard Shortcuts</div>
+            
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Screenshot Region</span>
+              <span class="shortcut-key">Ctrl+Alt+Drag</span>
+            </div>
+            
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Capture Hover</span>
+              <span class="shortcut-key">Ctrl+Alt+Hover</span>
+            </div>
+            
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Quick Note</span>
+              <span class="shortcut-key">Ctrl+Alt+N</span>
+            </div>
+          </div>
+          
+          <div class="status">
+            <div class="status-text">✓ Extension Ready</div>
+            <div class="help-text">
+              Use the keyboard shortcuts above to start capturing. 
+              All captures will be saved as PDFs in your Downloads/THE QUICKNESS folder.
+            </div>
+          </div>
+          
+          <div class="version">v1.0</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <div class="test-title">2. Quick Notes (Ctrl+Alt+N)</div>
+      <div class="test-description">
+        This demonstrates the Quick Notes feature that opens a note modal with the current page URL.
+      </div>
+      <button class="test-button" id="test-quick-notes">Test Quick Notes</button>
+      <div class="result-area" id="quick-notes-result"></div>
+    </div>
+    
+    <div class="test-section">
+      <div class="test-title">3. Screenshot Capture (Ctrl+Alt+Drag)</div>
+      <div class="test-description">
+        This demonstrates the Screenshot Capture feature that allows selecting a region to capture.
+      </div>
+      <button class="test-button" id="test-screenshot">Test Screenshot Capture</button>
+      <div class="result-area" id="screenshot-result">
+        <div class="demo-area">
+          <div class="demo-content">
+            <div class="demo-element">This is a sample element that can be captured.</div>
+            <div class="demo-element">This is another sample element that can be captured.</div>
+            <div class="demo-element">This is a third sample element that can be captured.</div>
+          </div>
+          <div class="demo-overlay"></div>
+          <div class="demo-selection"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <div class="test-title">4. Hover Capture (Ctrl+Alt+Hover)</div>
+      <div class="test-description">
+        This demonstrates the Hover Capture feature that highlights elements and allows capturing them.
+      </div>
+      <button class="test-button" id="test-hover">Test Hover Capture</button>
+      <div class="result-area" id="hover-result">
+        <div class="demo-area">
+          <div class="demo-content">
+            <div class="demo-element" id="hover-element-1">This is a sample element that can be highlighted.</div>
+            <div class="demo-element" id="hover-element-2">This is another sample element that can be highlighted.</div>
+            <div class="demo-element" id="hover-element-3">This is a third sample element that can be highlighted.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Demo Modal -->
+  <div class="demo-modal-backdrop"></div>
+  <div class="demo-modal">
+    <h3 style="margin: 0 0 16px 0; color: #333;">THE QUICKNESS - Add Note</h3>
+    <p style="margin: 0 0 16px 0; font-size: 12px; color: #666; word-break: break-all;" id="modal-url">https://example.com/</p>
+    
+    <div id="modal-preview" style="margin-bottom: 16px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+      <div style="font-weight: 500; margin-bottom: 8px;">Preview:</div>
+      <div id="preview-content" style="font-size: 13px;"></div>
+    </div>
+    
+    <label style="display: block; font-weight: 500; margin-bottom: 6px;">Your Note:</label>
+    <textarea id="note-input" style="width: 100%; min-height: 100px; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; resize: vertical;" placeholder="Add your note here..."></textarea>
+    
+    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+      <button id="cancel-btn" style="padding: 10px 20px; border: none; border-radius: 6px; background: #6c757d; color: white; cursor: pointer;">Cancel</button>
+      <button id="save-btn" style="padding: 10px 20px; border: none; border-radius: 6px; background: #007cff; color: white; cursor: pointer;">Save PDF</button>
+    </div>
+  </div>
+  
+  <!-- Success Notification -->
+  <div class="demo-success">✓ PDF saved: 2025-06-21_sample-note.pdf</div>
+  
+  <script>
+    // Popup Interface Test
+    document.getElementById('show-popup').addEventListener('click', function() {
+      const resultArea = document.getElementById('popup-result');
+      resultArea.style.display = 'block';
+    });
+    
+    // Quick Notes Test
+    document.getElementById('test-quick-notes').addEventListener('click', function() {
+      const resultArea = document.getElementById('quick-notes-result');
+      resultArea.innerHTML = '<p>Simulating Ctrl+Alt+N keypress...</p>';
+      
+      setTimeout(() => {
+        document.getElementById('modal-url').textContent = window.location.href;
+        document.getElementById('preview-content').innerHTML = '';
+        document.getElementById('modal-preview').style.display = 'none';
+        document.querySelector('.demo-modal-backdrop').style.display = 'block';
+        document.querySelector('.demo-modal').style.display = 'block';
+      }, 500);
+    });
+    
+    // Screenshot Capture Test
+    document.getElementById('test-screenshot').addEventListener('click', function() {
+      const resultArea = document.getElementById('screenshot-result');
+      resultArea.style.display = 'block';
+      
+      const overlay = document.querySelector('.demo-overlay');
+      const selection = document.querySelector('.demo-selection');
+      
+      overlay.style.display = 'block';
+      overlay.style.cursor = 'crosshair';
+      
+      let isSelecting = false;
+      let startX, startY;
+      
+      overlay.onmousedown = function(e) {
+        isSelecting = true;
+        startX = e.offsetX;
+        startY = e.offsetY;
+        selection.style.display = 'block';
+        selection.style.left = startX + 'px';
+        selection.style.top = startY + 'px';
+        selection.style.width = '0px';
+        selection.style.height = '0px';
+      };
+      
+      overlay.onmousemove = function(e) {
+        if (!isSelecting) return;
+        
+        const width = e.offsetX - startX;
+        const height = e.offsetY - startY;
+        
+        selection.style.width = Math.abs(width) + 'px';
+        selection.style.height = Math.abs(height) + 'px';
+        
+        if (width < 0) {
+          selection.style.left = e.offsetX + 'px';
+        }
+        
+        if (height < 0) {
+          selection.style.top = e.offsetY + 'px';
+        }
+      };
+      
+      overlay.onmouseup = function(e) {
+        isSelecting = false;
+        
+        // Show modal with screenshot preview
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          selection.style.display = 'none';
+          
+          document.getElementById('modal-url').textContent = window.location.href;
+          document.getElementById('preview-content').innerHTML = '<div style="font-weight: 500; margin-bottom: 8px;">Screenshot Preview:</div><div style="background: #eee; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 4px;">Screenshot Preview</div>';
+          document.getElementById('modal-preview').style.display = 'block';
+          document.querySelector('.demo-modal-backdrop').style.display = 'block';
+          document.querySelector('.demo-modal').style.display = 'block';
+        }, 300);
+      };
+    });
+    
+    // Hover Capture Test
+    document.getElementById('test-hover').addEventListener('click', function() {
+      const resultArea = document.getElementById('hover-result');
+      resultArea.style.display = 'block';
+      
+      const elements = document.querySelectorAll('#hover-result .demo-element');
+      
+      elements.forEach(element => {
+        element.addEventListener('mouseover', function() {
+          this.classList.add('highlighted');
+        });
+        
+        element.addEventListener('mouseout', function() {
+          this.classList.remove('highlighted');
+        });
+        
+        element.addEventListener('click', function() {
+          elements.forEach(el => el.classList.remove('highlighted'));
+          
+          // Show modal with element content
+          document.getElementById('modal-url').textContent = window.location.href;
+          document.getElementById('preview-content').innerHTML = '<div style="font-weight: 500; margin-bottom: 8px;">Captured Text:</div><div>' + this.textContent + '</div>';
+          document.getElementById('modal-preview').style.display = 'block';
+          document.querySelector('.demo-modal-backdrop').style.display = 'block';
+          document.querySelector('.demo-modal').style.display = 'block';
+        });
+      });
+    });
+    
+    // Modal Controls
+    document.getElementById('cancel-btn').addEventListener('click', function() {
+      document.querySelector('.demo-modal-backdrop').style.display = 'none';
+      document.querySelector('.demo-modal').style.display = 'none';
+    });
+    
+    document.querySelector('.demo-modal-backdrop').addEventListener('click', function() {
+      document.querySelector('.demo-modal-backdrop').style.display = 'none';
+      document.querySelector('.demo-modal').style.display = 'none';
+    });
+    
+    document.getElementById('save-btn').addEventListener('click', function() {
+      const noteText = document.getElementById('note-input').value.trim();
+      const words = noteText ? noteText.split(' ').slice(0, 2).join('-') : 'sample-note';
+      
+      document.querySelector('.demo-modal-backdrop').style.display = 'none';
+      document.querySelector('.demo-modal').style.display = 'none';
+      
+      // Show success notification
+      const notification = document.querySelector('.demo-success');
+      notification.textContent = `✓ PDF saved: 2025-06-21_${words}.pdf`;
+      notification.style.display = 'block';
+      notification.style.transform = 'translateX(0)';
+      
+      setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 300);
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
