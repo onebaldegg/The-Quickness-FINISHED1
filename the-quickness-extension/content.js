@@ -657,6 +657,12 @@
     async generateAndSavePDF(note) {
       const data = this.capturedData;
       
+      // Check if jsPDF is loaded
+      if (!window.jspdf) {
+        this.showToast('PDF library not loaded. Please try again.', 'error');
+        return;
+      }
+      
       // Create filename from timestamp and first 2 words of note
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       const noteWords = note.split(' ').slice(0, 2).join('-').replace(/[^a-zA-Z0-9-]/g, '') || 'note';
