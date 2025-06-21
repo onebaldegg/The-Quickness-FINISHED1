@@ -33,12 +33,17 @@
     }
     
     setupMessageListener() {
-      // Listen for download success messages from background script
-      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.action === 'downloadSuccess') {
-          this.showSuccessNotification(`PDF saved: ${request.filename}`);
-        }
-      });
+      // Listen for download success messages from background script (with error handling)
+      try {
+        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+          if (request.action === 'downloadSuccess') {
+            this.showSuccessNotification(`PDF saved: ${request.filename}`);
+          }
+        });
+      } catch (error) {
+        console.log('Background script messaging unavailable:', error);
+        // Extension will work without background script messaging
+      }
     }
     
     showSuccessNotification(message) {
