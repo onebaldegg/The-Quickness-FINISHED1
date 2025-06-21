@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "THE QUICKNESS",
+  "version": "1.0",
+  "description": "Quick capture tool for screenshots, images, text, and notes with local PDF saving",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["jspdf.umd.min.js", "html2canvas.min.js", "content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "commands": {
+    "screenshot-region": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+D"
+      },
+      "description": "Take screenshot of selected region"
+    },
+    "capture-hover": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+H"
+      },
+      "description": "Capture images or text on hover"
+    },
+    "quick-note": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+N"
+      },
+      "description": "Create a quick note"
+    }
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "THE QUICKNESS"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["*.js", "*.css", "icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
