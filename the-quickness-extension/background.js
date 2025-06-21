@@ -10,14 +10,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function downloadPDFToFolder(pdfDataArray, filename) {
   try {
-    // Convert array back to Uint8Array then to blob
+    // Convert array back to Uint8Array
     const uint8Array = new Uint8Array(pdfDataArray);
-    const blob = new Blob([uint8Array], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
+    
+    // Convert to base64 data URL (works in service workers)
+    let binary = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+      binary += String.fromCharCode(uint8Array[i]);
+    }
+    const base64 = btoa(binary);
+    const dataUrl = `data:application/pdf;base64,${base64}`;
     
     // Download to THE QUICKNESS folder (auto-creates if doesn't exist)
     chrome.downloads.download({
-      url: url,
+      url: dataUrl,
       filename: `THE QUICKNESS/${filename}`,
       saveAs: false  // Don't prompt user - auto-save
     }, (downloadId) => {
@@ -26,7 +32,6 @@ function downloadPDFToFolder(pdfDataArray, filename) {
       } else {
         console.log('PDF saved to Downloads/THE QUICKNESS/');
       }
-      URL.revokeObjectURL(url);
     });
   } catch (error) {
     console.error('Error saving PDF:', error);
