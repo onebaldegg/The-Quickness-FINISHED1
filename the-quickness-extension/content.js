@@ -304,10 +304,25 @@
     highlightElement(element) {
       this.hoveredElement = element;
       
-      // Fabric's exact highlighting - applied directly to element
-      element.style.outline = '2px solid #ff6b35';
-      element.style.outlineOffset = '2px';
-      element.style.backgroundColor = 'rgba(255, 107, 53, 0.1)';
+      // EXACT FABRIC HIGHLIGHTING - Match Fabric's precise hover styling
+      element.style.cssText += `
+        outline: 2px solid #f59e0b !important;
+        outline-offset: 2px !important;
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2) !important;
+        background-color: rgba(245, 158, 11, 0.05) !important;
+        transition: all 0.15s ease !important;
+      `;
+      
+      // Store original styles for restoration
+      if (!element._tqOriginalStyles) {
+        element._tqOriginalStyles = {
+          outline: element.style.outline,
+          outlineOffset: element.style.outlineOffset,
+          boxShadow: element.style.boxShadow,
+          backgroundColor: element.style.backgroundColor,
+          transition: element.style.transition
+        };
+      }
     }
 
     clearHoverHighlight() {
