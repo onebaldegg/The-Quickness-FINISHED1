@@ -62,18 +62,19 @@
     }
 
     bindEvents() {
-      // Handle Ctrl+Alt combinations directly (like Fabric does)
+      // Handle ALL Ctrl+Alt combinations directly (like Fabric does)
       document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.altKey) {
-          // Handle the shortcuts that require mouse interaction
           if (e.key.toLowerCase() === 'd') {
             e.preventDefault();
             this.startScreenshotMode();
           } else if (e.key.toLowerCase() === 'h') {
             e.preventDefault();
             this.startHoverMode();
+          } else if (e.key.toLowerCase() === 'n') {
+            e.preventDefault();
+            this.startQuickNoteMode();
           }
-          // Ctrl+Alt+N is handled by Chrome's commands API
         }
         
         if (e.key === 'Escape' && this.isActive) {
