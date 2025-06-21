@@ -60,9 +60,9 @@ Each PDF contains:
 
 ## Keyboard Shortcuts
 
-- `Ctrl+Shift+S` - Screenshot region selection
-- `Ctrl+Shift+C` - Hover capture mode
-- `Ctrl+Shift+N` - Quick note
+- `Ctrl+Alt+Q` - Screenshot region selection
+- `Ctrl+Alt+W` - Hover capture mode
+- `Ctrl+Alt+E` - Quick note
 - `Escape` - Cancel current operation
 - `Ctrl+Enter` - Save (when in note input)
 
