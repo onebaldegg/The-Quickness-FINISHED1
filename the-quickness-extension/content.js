@@ -808,34 +808,42 @@
         
         console.log('PDF generation complete, starting download');
         
-        // FIXED: Direct download without background script
+        // FIXED: Use Chrome downloads API for auto-saving to specific folder
         try {
-          // Create blob and download directly
           const pdfBlob = pdf.output('blob');
-          const url = URL.createObjectURL(pdfBlob);
           
-          // Create hidden download link
-          const downloadLink = document.createElement('a');
-          downloadLink.href = url;
-          downloadLink.download = filename;
-          downloadLink.style.display = 'none';
-          
-          // Trigger download
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
-          
-          // Clean up blob URL
-          setTimeout(() => URL.revokeObjectURL(url), 100);
-          
-          console.log('PDF download triggered successfully');
-          
-          // Show success notification
-          this.showSuccessNotification(`PDF saved: ${filename}`);
+          // Convert blob to data URL for Chrome downloads API
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result;
+            
+            // Use Chrome downloads API to force save to THE QUICKNESS folder
+            if (chrome && chrome.downloads) {
+              chrome.downloads.download({
+                url: dataUrl,
+                filename: `THE QUICKNESS/${filename}`,
+                saveAs: false,  // This forces no prompt
+                conflictAction: 'uniquify'
+              }, (downloadId) => {
+                if (chrome.runtime.lastError) {
+                  console.error('Chrome downloads API failed:', chrome.runtime.lastError);
+                  // Fallback to manual download
+                  this.fallbackDownload(pdfBlob, filename);
+                } else {
+                  console.log('PDF auto-saved successfully to THE QUICKNESS folder:', downloadId);
+                  this.showSuccessNotification(`PDF saved: ${filename}`);
+                }
+              });
+            } else {
+              console.log('Chrome downloads API not available, using fallback');
+              this.fallbackDownload(pdfBlob, filename);
+            }
+          };
+          reader.readAsDataURL(pdfBlob);
           
         } catch (downloadError) {
-          console.error('Direct download failed:', downloadError);
-          alert('PDF download failed. Please try again.');
+          console.error('Download setup failed:', downloadError);
+          this.fallbackDownload(pdf.output('blob'), filename);
         }
         
         // Close modal and cancel mode
