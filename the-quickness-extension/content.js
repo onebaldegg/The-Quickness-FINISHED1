@@ -62,9 +62,13 @@
     }
 
     bindEvents() {
-      // Handle ALL Ctrl+Alt combinations directly (like Fabric does)
+      let isCtrlAltPressed = false;
+      
+      // Track Ctrl+Alt key states more precisely like Fabric
       document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.altKey) {
+          isCtrlAltPressed = true;
+          
           if (e.key.toLowerCase() === 'd') {
             e.preventDefault();
             this.startScreenshotMode();
@@ -83,9 +87,18 @@
         }
       });
 
-      // Global mouse event listeners for drag detection
+      document.addEventListener('keyup', (e) => {
+        if (!e.ctrlKey || !e.altKey) {
+          isCtrlAltPressed = false;
+          if (this.mode === 'hover' && this.isActive) {
+            this.cancelMode();
+          }
+        }
+      });
+
+      // Better mouse handling like Fabric
       document.addEventListener('mousedown', (e) => {
-        if (e.ctrlKey && e.altKey && !this.isActive) {
+        if (isCtrlAltPressed && !this.isActive) {
           e.preventDefault();
           this.startScreenshotMode();
         }
