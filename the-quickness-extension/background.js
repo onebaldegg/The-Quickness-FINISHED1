@@ -11,12 +11,6 @@ chrome.commands.onCommand.addListener(async (command) => {
   
   let functionName = '';
   switch (command) {
-    case 'screenshot-region':
-      functionName = 'startScreenshotMode';
-      break;
-    case 'capture-hover':
-      functionName = 'startHoverMode';
-      break;
     case 'quick-note':
       functionName = 'startQuickNoteMode';
       break;
