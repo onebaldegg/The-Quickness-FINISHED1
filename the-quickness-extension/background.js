@@ -29,7 +29,7 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
     // FIXED: Enhanced auto-saving with better error handling
     chrome.downloads.download({
       url: dataUrl,
-      filename: `THE QUICKNESS/${filename}`,
+      filename: filename,  // Just filename, no folder path - goes to Downloads by default
       saveAs: false,  // Critical: No user prompt
       conflictAction: 'uniquify'  // Auto-rename if file exists
     }, (downloadId) => {
@@ -38,7 +38,15 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
         
         // Try multiple fallback approaches
         const fallbackMethods = [
-          // Method 1: Try without folder path
+          // Method 1: Try with explicit Downloads folder
+          () => chrome.downloads.download({
+            url: dataUrl,
+            filename: `Downloads/${filename}`,
+            saveAs: false,
+            conflictAction: 'uniquify'
+          }),
+          
+          // Method 2: Try with just filename again
           () => chrome.downloads.download({
             url: dataUrl,
             filename: filename,
@@ -46,18 +54,10 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
             conflictAction: 'uniquify'
           }),
           
-          // Method 2: Try with different folder syntax  
-          () => chrome.downloads.download({
-            url: dataUrl,
-            filename: `Downloads/THE QUICKNESS/${filename}`,
-            saveAs: false,
-            conflictAction: 'uniquify'
-          }),
-          
           // Method 3: Last resort - allow user prompt
           () => chrome.downloads.download({
             url: dataUrl,
-            filename: `THE QUICKNESS/${filename}`,
+            filename: filename,
             saveAs: true,
             conflictAction: 'uniquify'
           })
