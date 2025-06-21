@@ -63,12 +63,12 @@
 
     bindEvents() {
       document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.altKey) {
-          if (e.key === 'q' || e.key === 'Q') {
+        if (e.altKey && e.shiftKey) {
+          if (e.key === 's' || e.key === 'S') {
             e.preventDefault();
-          } else if (e.key === 'w' || e.key === 'W') {
+          } else if (e.key === 'c' || e.key === 'C') {
             e.preventDefault();
-          } else if (e.key === 'e' || e.key === 'E') {
+          } else if (e.key === 'n' || e.key === 'N') {
             e.preventDefault();
           }
         }
