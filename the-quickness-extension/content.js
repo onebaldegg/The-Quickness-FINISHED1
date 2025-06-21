@@ -528,15 +528,15 @@
         pdf.text(noteLines, 20, yPos);
       }
       
-      // Download
+      // Download to THE QUICKNESS folder automatically
       const pdfData = pdf.output('arraybuffer');
-      const blob = new Blob([pdfData], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
+      
+      // Send to background script for automatic folder saving
+      chrome.runtime.sendMessage({
+        action: 'downloadPDF',
+        pdfData: Array.from(new Uint8Array(pdfData)),
+        filename: filename
+      });
       
       this.closeModal();
       this.cancelMode();
