@@ -4,9 +4,9 @@ A powerful Chrome extension for quick capture of screenshots, images, text, and 
 
 ## Features
 
-- **Screenshot Region Capture** (Ctrl+Alt+D): Click and drag to select any area of the page for screenshot
-- **Hover Capture** (Ctrl+Alt+H): Hover over images or text elements to capture them with preserved formatting
-- **Quick Notes** (Ctrl+Alt+N): Create quick text notes associated with the current page
+- **Screenshot Region Capture** (Ctrl+Shift+S): Click and drag to select any area of the page for screenshot
+- **Hover Capture** (Ctrl+Shift+C): Hover over images or text elements to capture them with preserved formatting
+- **Quick Notes** (Ctrl+Shift+N): Create quick text notes associated with the current page
 - **Local PDF Saving**: All captures are automatically saved as PDFs to your Downloads/THE QUICKNESS folder
 - **Preserved Links**: All captured content maintains clickable links in the generated PDFs
 - **Formatted Text**: Text captures preserve styling and formatting
