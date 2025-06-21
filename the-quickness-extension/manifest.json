@@ -55,7 +55,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["*.js", "*.css", "icons/*"],
+      "resources": ["*.js", "*.css", "icons/*", "jspdf.umd.min.js", "html2canvas.min.js"],
       "matches": ["<all_urls>"]
     }
   ]
