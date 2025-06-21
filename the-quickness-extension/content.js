@@ -41,12 +41,12 @@
     bindEvents() {
       // Prevent default keyboard shortcuts that might conflict
       document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.altKey) {
-          if (e.key === 'd' || e.key === 'D') {
+        if (e.ctrlKey && e.shiftKey) {
+          if (e.key === 'S') {
             e.preventDefault();
-          } else if (e.key === 'h' || e.key === 'H') {
+          } else if (e.key === 'C') {
             e.preventDefault();
-          } else if (e.key === 'n' || e.key === 'N') {
+          } else if (e.key === 'N') {
             e.preventDefault();
           }
         }
