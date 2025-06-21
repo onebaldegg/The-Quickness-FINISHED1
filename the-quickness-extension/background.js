@@ -25,12 +25,19 @@ function downloadPDFToFolder(pdfDataArray, filename) {
     chrome.downloads.download({
       url: dataUrl,
       filename: `THE QUICKNESS/${filename}`,
-      saveAs: false  // Don't prompt user - auto-save
+      saveAs: false,  // Don't prompt user - auto-save
+      conflictAction: 'uniquify'  // Auto-rename if file exists
     }, (downloadId) => {
       if (chrome.runtime.lastError) {
         console.error('Download failed:', chrome.runtime.lastError);
+        // Fallback: try without folder path
+        chrome.downloads.download({
+          url: dataUrl,
+          filename: filename,
+          saveAs: false
+        });
       } else {
-        console.log('PDF saved to Downloads/THE QUICKNESS/');
+        console.log('PDF saved to Downloads/THE QUICKNESS/', downloadId);
       }
     });
   } catch (error) {
