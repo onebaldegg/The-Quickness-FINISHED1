@@ -208,6 +208,13 @@
     async captureScreenshotArea() {
       if (!this.selectionStart || !this.selectionEnd) return;
       
+      // Check if libraries are loaded
+      if (!this.librariesLoaded || !window.html2canvas) {
+        this.showToast('Libraries not loaded yet. Please try again.', 'error');
+        this.cancelMode();
+        return;
+      }
+      
       const left = Math.min(this.selectionStart.x, this.selectionEnd.x);
       const top = Math.min(this.selectionStart.y, this.selectionEnd.y);
       const width = Math.abs(this.selectionEnd.x - this.selectionStart.x);
