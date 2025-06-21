@@ -57,7 +57,18 @@
     createOverlay() {
       this.overlay = document.createElement('div');
       this.overlay.className = 'tq-overlay';
-      this.overlay.style.display = 'none';
+      this.overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 2147483647;
+        cursor: crosshair;
+        display: none;
+        pointer-events: none;
+      `;
       document.body.appendChild(this.overlay);
     }
 
