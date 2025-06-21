@@ -857,6 +857,34 @@
       }
     }
 
+    fallbackDownload(pdfBlob, filename) {
+      console.log('Using fallback download method');
+      try {
+        const url = URL.createObjectURL(pdfBlob);
+        
+        // Create hidden download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.style.display = 'none';
+        
+        // Trigger download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        // Clean up blob URL
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+        
+        console.log('Fallback download triggered');
+        this.showSuccessNotification(`PDF saved: ${filename}`);
+        
+      } catch (error) {
+        console.error('Fallback download also failed:', error);
+        alert('PDF download failed. Please try again.');
+      }
+    }
+
     closeModal() {
       if (this.modal) {
         const backdrop = document.querySelector('.tq-modal-backdrop');
