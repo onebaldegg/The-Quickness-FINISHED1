@@ -1,7 +1,7 @@
 // Background service worker for THE QUICKNESS extension
 
 let isCapturing = false;
-let captureMode = null; // 'screenshot', 'hover', 'note'
+let captureMode = null;
 
 // Handle keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
@@ -75,7 +75,6 @@ async function initializeQuickNote(tabId) {
   }
 }
 
-// Functions to be injected into content script context
 function activateScreenshotMode() {
   if (window.theQuicknessExtension) {
     window.theQuicknessExtension.startScreenshotMode();
@@ -103,16 +102,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     captureMode = null;
   }
   
-  if (request.action === 'downloadPDF') {
-    downloadPDF(request.pdfData, request.filename);
+  if (request.action === 'downloadFile') {
+    downloadFile(request.content, request.filename, request.type);
+  }
+  
+  if (request.action === 'captureScreenshot') {
+    captureVisibleTab(request.area).then(dataUrl => {
+      sendResponse({ dataUrl: dataUrl });
+    }).catch(error => {
+      console.error('Screenshot capture failed:', error);
+      sendResponse({ error: error.message });
+    });
+    return true; // Will respond asynchronously
   }
   
   return true;
 });
 
-function downloadPDF(pdfData, filename) {
+async function captureVisibleTab(area) {
   try {
-    const blob = new Blob([pdfData], { type: 'application/pdf' });
+    const dataUrl = await chrome.tabs.captureVisibleTab(null, {
+      format: 'png',
+      quality: 100
+    });
+    
+    // For now, return the full tab screenshot
+    // In a full implementation, we would crop to the specified area
+    return dataUrl;
+  } catch (error) {
+    throw new Error('Failed to capture tab: ' + error.message);
+  }
+}
+
+function downloadFile(content, filename, mimeType) {
+  try {
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     
     chrome.downloads.download({
@@ -123,12 +147,12 @@ function downloadPDF(pdfData, filename) {
       if (chrome.runtime.lastError) {
         console.error('Download failed:', chrome.runtime.lastError);
       } else {
-        console.log('PDF downloaded successfully:', downloadId);
+        console.log('File downloaded successfully:', downloadId);
       }
       URL.revokeObjectURL(url);
     });
   } catch (error) {
-    console.error('Error downloading PDF:', error);
+    console.error('Error downloading file:', error);
   }
 }
 
