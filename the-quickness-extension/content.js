@@ -286,10 +286,60 @@
     enableHoverCapture() {
       document.body.classList.add('tq-hovering');
       this.overlay.style.pointerEvents = 'none';
+      this.overlay.style.background = 'rgba(0, 0, 0, 0.1)';
       
-      document.addEventListener('mouseover', this.handleHoverMouseOver.bind(this));
-      document.addEventListener('mouseout', this.handleHoverMouseOut.bind(this));
-      document.addEventListener('click', this.handleHoverClick.bind(this));
+      // More precise hover detection like Fabric
+      const hoverHandler = (e) => {
+        if (this.mode !== 'hover') return;
+        
+        const element = e.target;
+        
+        // Skip our own UI elements
+        if (element.closest('.tq-overlay') || element.classList.contains('tq-hover-highlight')) {
+          return;
+        }
+        
+        // Better element detection logic like Fabric
+        const isImage = element.tagName === 'IMG';
+        const isSVG = element.tagName === 'SVG' || element.closest('svg');
+        const isVideo = element.tagName === 'VIDEO';
+        const hasText = element.textContent && element.textContent.trim().length > 3;
+        const isContentElement = [
+          'P', 'DIV', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 
+          'ARTICLE', 'SECTION', 'BLOCKQUOTE', 'LI', 'TD', 'TH'
+        ].includes(element.tagName);
+        
+        // More intelligent element selection
+        const isValidTarget = isImage || isSVG || isVideo || 
+          (hasText && isContentElement && element.offsetWidth > 50 && element.offsetHeight > 20);
+        
+        if (isValidTarget) {
+          this.clearHoverHighlight();
+          this.hoveredElement = element;
+          
+          // Better highlighting like Fabric
+          element.style.outline = '2px solid #ff6b35';
+          element.style.outlineOffset = '2px';
+          element.style.backgroundColor = 'rgba(255, 107, 53, 0.1)';
+          element.classList.add('tq-hover-highlight');
+        }
+      };
+      
+      const clickHandler = (e) => {
+        if (this.mode !== 'hover' || !this.hoveredElement) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        this.captureHoveredElement();
+      };
+      
+      document.addEventListener('mouseover', hoverHandler);
+      document.addEventListener('click', clickHandler);
+      
+      // Store handlers for cleanup
+      this.hoverHandler = hoverHandler;
+      this.clickHandler = clickHandler;
     }
 
     handleHoverMouseOver(e) {
