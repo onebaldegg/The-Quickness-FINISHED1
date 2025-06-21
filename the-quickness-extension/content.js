@@ -738,15 +738,45 @@
         pdf.text(noteLines, 20, yPos);
       }
       
-      // Download to THE QUICKNESS folder automatically
-      const pdfData = pdf.output('arraybuffer');
-      
-      // Send to background script for automatic folder saving
-      chrome.runtime.sendMessage({
-        action: 'downloadPDF',
-        pdfData: Array.from(new Uint8Array(pdfData)),
-        filename: filename
-      });
+      // FIXED: Direct download without background script to avoid context invalidation
+      try {
+        // Create blob and download directly
+        const pdfBlob = pdf.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        
+        // Create hidden download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename; // This will save to default Downloads folder
+        downloadLink.style.display = 'none';
+        
+        // Trigger download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        // Clean up blob URL
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+        
+        // Show success notification
+        this.showSuccessNotification(`PDF saved: ${filename}`);
+        
+      } catch (error) {
+        console.error('Direct download failed:', error);
+        
+        // Fallback: Try background script method
+        try {
+          const pdfData = pdf.output('arraybuffer');
+          chrome.runtime.sendMessage({
+            action: 'downloadPDF',
+            pdfData: Array.from(new Uint8Array(pdfData)),
+            filename: filename
+          });
+        } catch (bgError) {
+          console.error('Background script also failed:', bgError);
+          alert('PDF download failed. Please try again.');
+        }
+      }
       
       this.closeModal();
       this.cancelMode();
