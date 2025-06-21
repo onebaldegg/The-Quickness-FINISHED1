@@ -33,11 +33,13 @@
     }
     
     setupMessageListener() {
-      // Listen for download success messages from background script (with error handling)
+      // Listen for download success/failure messages from background script
       try {
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           if (request.action === 'downloadSuccess') {
             this.showSuccessNotification(`PDF saved: ${request.filename}`);
+          } else if (request.action === 'downloadFailed') {
+            this.showFailureNotification(`PDF save failed: ${request.filename}`);
           }
         });
       } catch (error) {
