@@ -27,20 +27,20 @@ A powerful Chrome extension for quick capture of screenshots, images, text, and 
 ## Usage
 
 ### Screenshot Region Capture
-1. Press `Ctrl+Alt+D` on any webpage
+1. Press `Ctrl+Shift+S` on any webpage
 2. Click and drag to select the area you want to capture
 3. Add a note in the popup that appears
 4. Click "Save PDF" to save the capture locally
 
 ### Hover Capture
-1. Press `Ctrl+Alt+H` on any webpage
+1. Press `Ctrl+Shift+C` on any webpage
 2. Hover over images or text elements you want to capture
 3. Click on the highlighted element to capture it
 4. Add a note in the popup that appears
 5. Click "Save PDF" to save the capture locally
 
 ### Quick Notes
-1. Press `Ctrl+Alt+N` on any webpage
+1. Press `Ctrl+Shift+N` on any webpage
 2. Type your note in the popup that appears
 3. Click "Save PDF" to save the note with the current page URL
 
