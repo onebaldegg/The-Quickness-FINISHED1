@@ -695,8 +695,21 @@
       try {
         const data = this.capturedData;
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-        const noteWords = note.split(' ').slice(0, 2).join('-').replace(/[^a-zA-Z0-9-]/g, '') || 'note';
-        const filename = `${timestamp}_${noteWords}.pdf`;
+        
+        // FIXED: Proper filename following your rules - timestamp_first-two-words-of-note.pdf
+        let noteWords = '';
+        if (note && note.trim()) {
+          noteWords = note.trim()
+            .split(/\s+/)  // Split by any whitespace
+            .slice(0, 2)   // Take first two words
+            .join('-')     // Join with hyphen
+            .replace(/[^a-zA-Z0-9-]/g, '')  // Remove special characters except hyphens
+            .toLowerCase(); // Make lowercase for consistency
+        }
+        
+        const filename = noteWords 
+          ? `${timestamp}_${noteWords}.pdf`
+          : `${timestamp}_note.pdf`;
         
         console.log('Creating PDF with filename:', filename);
         
