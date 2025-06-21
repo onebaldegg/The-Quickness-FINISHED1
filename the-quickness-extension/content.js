@@ -225,13 +225,61 @@
         this.hideOverlay();
         await new Promise(resolve => setTimeout(resolve, 100));
         
+        // FIXED CORS ISSUES: Enhanced html2canvas configuration
         const canvas = await window.html2canvas(document.body, {
           x: left,
           y: top,
           width: width,
           height: height,
           useCORS: true,
-          allowTaint: true
+          allowTaint: false,  // Prevent canvas tainting
+          foreignObjectRendering: true,  // Better cross-origin handling
+          scale: 1,  // Consistent scaling
+          logging: false,  // Disable debug logging
+          backgroundColor: null,  // Transparent background
+          removeContainer: true,  // Clean up temporary containers
+          imageTimeout: 15000,  // Longer timeout for slow images
+          onclone: (clonedDoc) => {
+            // CORS FIX: Remove problematic elements before capture
+            const problematicSelectors = [
+              'iframe',
+              'object',
+              'embed',
+              'video[src*="youtube"]',
+              'video[src*="vimeo"]',
+              'img[src^="data:"]',  // Keep data URLs
+              'canvas'
+            ];
+            
+            // Remove external iframes and media that might cause CORS
+            clonedDoc.querySelectorAll('iframe:not([src^="data:"]):not([src^="blob:"])').forEach(el => {
+              if (!el.src.startsWith(window.location.origin)) {
+                el.remove();
+              }
+            });
+            
+            // Replace external images with placeholders if they fail
+            clonedDoc.querySelectorAll('img').forEach(img => {
+              if (img.src && !img.src.startsWith('data:') && !img.src.startsWith('blob:')) {
+                // Test if image is accessible
+                const testImg = new Image();
+                testImg.crossOrigin = 'anonymous';
+                testImg.onerror = () => {
+                  // Replace with placeholder
+                  img.style.background = '#f3f4f6';
+                  img.style.border = '2px dashed #d1d5db';
+                  img.style.display = 'flex';
+                  img.style.alignItems = 'center';
+                  img.style.justifyContent = 'center';
+                  img.style.color = '#6b7280';
+                  img.style.fontSize = '12px';
+                  img.alt = 'Image blocked by CORS';
+                  img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDlWN0M21IDUuOSAxOS4xIDUgMTggNUg2QzQuOSA1IDQgNS45IDQgN1Y5SDIxWiIgZmlsbD0iIzZCNzI4MCIvPgo8cGF0aCBkPSJNMjEgMTBIMFYxN0MwIDE4LjEgMC45IDE5IDIgMTlIMjJDMjMuMSAxOSAyNCAxOC4xIDI0IDE3VjEwSDIxWiIgZmlsbD0iIzZCNzI4MCIvPgo8L3N2Zz4K';
+                };
+                testImg.src = img.src;
+              }
+            });
+          }
         });
         
         this.capturedData = {
@@ -245,7 +293,50 @@
         
       } catch (error) {
         console.error('Screenshot failed:', error);
-        this.cancelMode();
+        
+        // CORS FALLBACK: Try alternative capture method
+        try {
+          console.log('Trying fallback capture method...');
+          
+          // Simple fallback - capture visible area only
+          const simpleCanvas = await window.html2canvas(document.body, {
+            height: window.innerHeight,
+            width: window.innerWidth,
+            x: 0,
+            y: window.scrollY,
+            useCORS: false,
+            allowTaint: true,
+            scale: 1
+          });
+          
+          // Crop to selection area
+          const cropCanvas = document.createElement('canvas');
+          const ctx = cropCanvas.getContext('2d');
+          cropCanvas.width = width;
+          cropCanvas.height = height;
+          
+          ctx.drawImage(
+            simpleCanvas,
+            left, top - window.scrollY,
+            width, height,
+            0, 0,
+            width, height
+          );
+          
+          this.capturedData = {
+            type: 'screenshot',
+            url: window.location.href,
+            title: document.title,
+            content: cropCanvas.toDataURL('image/png')
+          };
+          
+          this.showNoteModal();
+          
+        } catch (fallbackError) {
+          console.error('Fallback capture also failed:', fallbackError);
+          alert('Screenshot capture failed. This may be due to website security restrictions.');
+          this.cancelMode();
+        }
       }
     }
 
