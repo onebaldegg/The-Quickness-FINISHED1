@@ -24,14 +24,6 @@
       "run_at": "document_end"
     }
   ],
-  "commands": {
-    "quick-note": {
-      "suggested_key": {
-        "default": "Ctrl+Alt+N"
-      },
-      "description": "Create a quick note"
-    }
-  },
   "action": {
     "default_popup": "popup.html",
     "default_title": "THE QUICKNESS"
