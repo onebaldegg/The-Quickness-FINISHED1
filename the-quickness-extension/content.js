@@ -47,46 +47,61 @@
     }
     
     showSuccessNotification(message) {
-      // Remove any existing notifications
-      const existing = document.querySelector('.tq-success-notification');
-      if (existing) existing.remove();
-      
-      const notification = document.createElement('div');
-      notification.className = 'tq-success-notification';
-      notification.style.cssText = `
-        position: fixed !important;
-        top: 20px !important;
-        right: 20px !important;
-        background: #10b981 !important;
-        color: white !important;
-        padding: 12px 20px !important;
-        border-radius: 8px !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-        z-index: 2147483647 !important;
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-        opacity: 0 !important;
-        transform: translateX(100%) !important;
-        transition: all 0.3s ease !important;
-        pointer-events: none !important;
-      `;
-      
-      notification.textContent = `✓ ${message}`;
-      document.body.appendChild(notification);
-      
-      // Animate in
-      setTimeout(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateX(0)';
-      }, 10);
-      
-      // Animate out and remove
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
-      }, 3000);
+      try {
+        // Remove any existing notifications
+        const existing = document.querySelector('.tq-success-notification');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = 'tq-success-notification';
+        notification.style.cssText = `
+          position: fixed !important;
+          top: 20px !important;
+          right: 20px !important;
+          background: #10b981 !important;
+          color: white !important;
+          padding: 12px 20px !important;
+          border-radius: 8px !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+          z-index: 2147483647 !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+          opacity: 0 !important;
+          transform: translateX(100%) !important;
+          transition: all 0.3s ease !important;
+          pointer-events: none !important;
+        `;
+        
+        notification.textContent = `✓ ${message}`;
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(0)';
+          }
+        }, 10);
+        
+        // Animate out and remove
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+              if (notification.parentNode) {
+                notification.remove();
+              }
+            }, 300);
+          }
+        }, 3000);
+        
+      } catch (error) {
+        console.error('Notification failed:', error);
+        // Fallback: simple console message
+        console.log('✓', message);
+      }
     }
 
     async waitForLibraries() {
