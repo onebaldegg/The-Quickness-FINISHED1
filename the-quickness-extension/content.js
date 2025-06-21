@@ -808,41 +808,29 @@
         
         console.log('PDF generation complete, starting download');
         
-        // FIXED: Use Chrome downloads API for auto-saving to specific folder
+        // FIXED: Use background script for proper auto-saving
         try {
-          const pdfBlob = pdf.output('blob');
+          const pdfData = pdf.output('arraybuffer');
           
-          // Convert blob to data URL for Chrome downloads API
-          const reader = new FileReader();
-          reader.onload = () => {
-            const dataUrl = reader.result;
-            
-            // Use Chrome downloads API to force save to THE QUICKNESS folder
-            if (chrome && chrome.downloads) {
-              chrome.downloads.download({
-                url: dataUrl,
-                filename: `THE QUICKNESS/${filename}`,
-                saveAs: false,  // This forces no prompt
-                conflictAction: 'uniquify'
-              }, (downloadId) => {
-                if (chrome.runtime.lastError) {
-                  console.error('Chrome downloads API failed:', chrome.runtime.lastError);
-                  // Fallback to manual download
-                  this.fallbackDownload(pdfBlob, filename);
-                } else {
-                  console.log('PDF auto-saved successfully to THE QUICKNESS folder:', downloadId);
-                  this.showSuccessNotification(`PDF saved: ${filename}`);
-                }
-              });
+          console.log('Sending PDF to background script for download');
+          
+          chrome.runtime.sendMessage({
+            action: 'downloadPDF',
+            pdfData: Array.from(new Uint8Array(pdfData)),
+            filename: filename
+          }, (response) => {
+            if (chrome.runtime.lastError) {
+              console.error('Failed to send to background script:', chrome.runtime.lastError);
+              // Use fallback method
+              this.fallbackDownload(pdf.output('blob'), filename);
             } else {
-              console.log('Chrome downloads API not available, using fallback');
-              this.fallbackDownload(pdfBlob, filename);
+              console.log('PDF sent to background script successfully');
+              // Success notification will come from background script message
             }
-          };
-          reader.readAsDataURL(pdfBlob);
+          });
           
         } catch (downloadError) {
-          console.error('Download setup failed:', downloadError);
+          console.error('Background script communication failed:', downloadError);
           this.fallbackDownload(pdf.output('blob'), filename);
         }
         
