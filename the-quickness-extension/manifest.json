@@ -27,19 +27,19 @@
   "commands": {
     "screenshot-region": {
       "suggested_key": {
-        "default": "Ctrl+Shift+S"
+        "default": "Ctrl+Alt+Q"
       },
       "description": "Take screenshot of selected region"
     },
     "capture-hover": {
       "suggested_key": {
-        "default": "Ctrl+Shift+C"
+        "default": "Ctrl+Alt+W"
       },
       "description": "Capture images or text on hover"
     },
     "quick-note": {
       "suggested_key": {
-        "default": "Ctrl+Shift+N"
+        "default": "Ctrl+Alt+E"
       },
       "description": "Create a quick note"
     }
