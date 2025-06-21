@@ -669,137 +669,171 @@
     }
 
     async savePDF(note) {
-      if (!window.jspdf) return;
+      console.log('Save PDF started with note:', note);
       
-      const data = this.capturedData;
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-      const noteWords = note.split(' ').slice(0, 2).join('-').replace(/[^a-zA-Z0-9-]/g, '') || 'note';
-      const filename = `${timestamp}_${noteWords}.pdf`;
+      if (!window.jspdf) {
+        console.error('jsPDF library not loaded');
+        alert('PDF library not loaded. Please refresh the page and try again.');
+        return;
+      }
       
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF();
-      
-      let yPos = 20;
-      
-      // Title
-      pdf.setFontSize(16);
-      pdf.setFont(undefined, 'bold');
-      pdf.text('THE QUICKNESS Capture', 20, yPos);
-      yPos += 15;
-      
-      // URL (clickable)
-      pdf.setFontSize(10);
-      pdf.setTextColor(0, 0, 255);
-      pdf.textWithLink('Source: ' + data.url, 20, yPos, { url: data.url });
-      pdf.setTextColor(0, 0, 0);
-      yPos += 15;
-      
-      // Content
-      if (data.type === 'screenshot') {
-        const img = new Image();
-        img.src = data.content;
+      try {
+        const data = this.capturedData;
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const noteWords = note.split(' ').slice(0, 2).join('-').replace(/[^a-zA-Z0-9-]/g, '') || 'note';
+        const filename = `${timestamp}_${noteWords}.pdf`;
         
-        await new Promise(resolve => {
-          img.onload = () => {
-            const ratio = Math.min(170 / img.width, 200 / img.height);
-            pdf.addImage(data.content, 'PNG', 20, yPos, img.width * ratio, img.height * ratio);
-            yPos += img.height * ratio + 15;
-            resolve();
-          };
-          img.onerror = resolve;
-        });
-      } else if (data.type === 'text') {
-        pdf.setFontSize(12);
+        console.log('Creating PDF with filename:', filename);
+        
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        
+        let yPos = 20;
+        
+        // Title
+        pdf.setFontSize(16);
         pdf.setFont(undefined, 'bold');
-        pdf.text('Captured Text:', 20, yPos);
-        yPos += 10;
+        pdf.text('THE QUICKNESS Capture', 20, yPos);
+        yPos += 15;
         
-        pdf.setFont(undefined, 'normal');
-        const textLines = pdf.splitTextToSize(data.content.text, 170);
-        pdf.text(textLines, 20, yPos);
-        yPos += textLines.length * 5 + 10;
+        // URL (clickable)
+        pdf.setFontSize(10);
+        pdf.setTextColor(0, 0, 255);
+        pdf.textWithLink('Source: ' + data.url, 20, yPos, { url: data.url });
+        pdf.setTextColor(0, 0, 0);
+        yPos += 15;
         
-        // Links
-        if (data.content.links && data.content.links.length > 0) {
+        // Content based on type
+        if (data.type === 'screenshot') {
+          console.log('Processing screenshot content');
+          try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            await new Promise((resolve, reject) => {
+              img.onload = () => {
+                try {
+                  const ratio = Math.min(170 / img.width, 200 / img.height);
+                  pdf.addImage(data.content, 'PNG', 20, yPos, img.width * ratio, img.height * ratio);
+                  yPos += img.height * ratio + 15;
+                  resolve();
+                } catch (error) {
+                  console.error('Error adding image to PDF:', error);
+                  reject(error);
+                }
+              };
+              img.onerror = (error) => {
+                console.error('Error loading image:', error);
+                reject(error);
+              };
+              img.src = data.content;
+            });
+          } catch (error) {
+            console.error('Screenshot processing failed:', error);
+            // Continue without image
+            pdf.setFontSize(12);
+            pdf.text('Screenshot capture failed', 20, yPos);
+            yPos += 15;
+          }
+        } else if (data.type === 'text') {
+          console.log('Processing text content');
+          pdf.setFontSize(12);
           pdf.setFont(undefined, 'bold');
-          pdf.text('Links:', 20, yPos);
+          pdf.text('Captured Text:', 20, yPos);
           yPos += 10;
           
           pdf.setFont(undefined, 'normal');
-          pdf.setTextColor(0, 0, 255);
-          data.content.links.forEach(link => {
-            pdf.textWithLink(link.text, 20, yPos, { url: link.href });
-            yPos += 8;
-          });
-          pdf.setTextColor(0, 0, 0);
+          const textLines = pdf.splitTextToSize(data.content.text, 170);
+          pdf.text(textLines, 20, yPos);
+          yPos += textLines.length * 5 + 10;
+          
+          // Links
+          if (data.content.links && data.content.links.length > 0) {
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Links:', 20, yPos);
+            yPos += 10;
+            
+            pdf.setFont(undefined, 'normal');
+            pdf.setTextColor(0, 0, 255);
+            data.content.links.forEach(link => {
+              pdf.textWithLink(link.text, 20, yPos, { url: link.href });
+              yPos += 8;
+            });
+            pdf.setTextColor(0, 0, 0);
+            yPos += 10;
+          }
+        } else if (data.type === 'image') {
+          console.log('Processing image content');
+          pdf.setFontSize(12);
+          pdf.setFont(undefined, 'bold');
+          pdf.text('Image Source:', 20, yPos);
           yPos += 10;
+          
+          pdf.setTextColor(0, 0, 255);
+          pdf.textWithLink(data.content.src, 20, yPos, { url: data.content.src });
+          pdf.setTextColor(0, 0, 0);
+          yPos += 15;
+        } else if (data.type === 'note') {
+          console.log('Processing note content');
+          pdf.setFontSize(12);
+          pdf.setFont(undefined, 'bold');
+          pdf.text('Quick Note:', 20, yPos);
+          yPos += 15;
         }
-      } else if (data.type === 'image') {
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Image Source:', 20, yPos);
-        yPos += 10;
         
-        pdf.setTextColor(0, 0, 255);
-        pdf.textWithLink(data.content.src, 20, yPos, { url: data.content.src });
-        pdf.setTextColor(0, 0, 0);
-        yPos += 15;
-      }
-      
-      // Notes
-      if (note) {
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Notes:', 20, yPos);
-        yPos += 10;
+        // Notes
+        if (note) {
+          pdf.setFontSize(12);
+          pdf.setFont(undefined, 'bold');
+          pdf.text('Notes:', 20, yPos);
+          yPos += 10;
+          
+          pdf.setFont(undefined, 'normal');
+          const noteLines = pdf.splitTextToSize(note, 170);
+          pdf.text(noteLines, 20, yPos);
+        }
         
-        pdf.setFont(undefined, 'normal');
-        const noteLines = pdf.splitTextToSize(note, 170);
-        pdf.text(noteLines, 20, yPos);
-      }
-      
-      // FIXED: Direct download without background script to avoid context invalidation
-      try {
-        // Create blob and download directly
-        const pdfBlob = pdf.output('blob');
-        const url = URL.createObjectURL(pdfBlob);
+        console.log('PDF generation complete, starting download');
         
-        // Create hidden download link
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = filename; // This will save to default Downloads folder
-        downloadLink.style.display = 'none';
-        
-        // Trigger download
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        
-        // Clean up blob URL
-        setTimeout(() => URL.revokeObjectURL(url), 100);
-        
-        // Show success notification
-        this.showSuccessNotification(`PDF saved: ${filename}`);
-        
-      } catch (error) {
-        console.error('Direct download failed:', error);
-        
-        // Fallback: Try background script method
+        // FIXED: Direct download without background script
         try {
-          const pdfData = pdf.output('arraybuffer');
-          chrome.runtime.sendMessage({
-            action: 'downloadPDF',
-            pdfData: Array.from(new Uint8Array(pdfData)),
-            filename: filename
-          });
-        } catch (bgError) {
-          console.error('Background script also failed:', bgError);
+          // Create blob and download directly
+          const pdfBlob = pdf.output('blob');
+          const url = URL.createObjectURL(pdfBlob);
+          
+          // Create hidden download link
+          const downloadLink = document.createElement('a');
+          downloadLink.href = url;
+          downloadLink.download = filename;
+          downloadLink.style.display = 'none';
+          
+          // Trigger download
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+          
+          // Clean up blob URL
+          setTimeout(() => URL.revokeObjectURL(url), 100);
+          
+          console.log('PDF download triggered successfully');
+          
+          // Show success notification
+          this.showSuccessNotification(`PDF saved: ${filename}`);
+          
+        } catch (downloadError) {
+          console.error('Direct download failed:', downloadError);
           alert('PDF download failed. Please try again.');
         }
+        
+        // Close modal and cancel mode
+        this.closeModal();
+        this.cancelMode();
+        
+      } catch (error) {
+        console.error('PDF generation failed:', error);
+        alert('PDF generation failed: ' + error.message);
+        // Don't close modal on error so user can try again
       }
-      
-      this.closeModal();
-      this.cancelMode();
     }
 
     closeModal() {
