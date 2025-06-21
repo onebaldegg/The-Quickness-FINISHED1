@@ -912,7 +912,7 @@
         // Create hidden download link
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
-        downloadLink.download = filename;
+        downloadLink.download = filename;  // Just filename - browser handles Downloads folder
         downloadLink.style.display = 'none';
         
         // Trigger download
@@ -923,7 +923,7 @@
         // Clean up blob URL
         setTimeout(() => URL.revokeObjectURL(url), 100);
         
-        console.log('Fallback download triggered');
+        console.log('Fallback download triggered to Downloads folder');
         this.showSuccessNotification(`PDF saved: ${filename}`);
         
       } catch (error) {
