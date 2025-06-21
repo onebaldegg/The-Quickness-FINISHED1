@@ -327,9 +327,26 @@
 
     clearHoverHighlight() {
       if (this.hoveredElement) {
-        this.hoveredElement.style.outline = '';
-        this.hoveredElement.style.outlineOffset = '';
-        this.hoveredElement.style.backgroundColor = '';
+        // EXACT FABRIC BEHAVIOR - Restore original styles properly
+        if (this.hoveredElement._tqOriginalStyles) {
+          const styles = this.hoveredElement._tqOriginalStyles;
+          this.hoveredElement.style.outline = styles.outline || '';
+          this.hoveredElement.style.outlineOffset = styles.outlineOffset || '';
+          this.hoveredElement.style.boxShadow = styles.boxShadow || '';
+          this.hoveredElement.style.backgroundColor = styles.backgroundColor || '';
+          this.hoveredElement.style.transition = styles.transition || '';
+          
+          // Clean up stored styles
+          delete this.hoveredElement._tqOriginalStyles;
+        } else {
+          // Fallback cleanup
+          this.hoveredElement.style.outline = '';
+          this.hoveredElement.style.outlineOffset = '';
+          this.hoveredElement.style.boxShadow = '';
+          this.hoveredElement.style.backgroundColor = '';
+          this.hoveredElement.style.transition = '';
+        }
+        
         this.hoveredElement = null;
       }
     }
