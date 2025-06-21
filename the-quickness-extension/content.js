@@ -855,10 +855,15 @@
     }
 
     clearEventListeners() {
-      document.removeEventListener('mouseover', this.handleHoverMouseOver);
-      document.removeEventListener('mouseout', this.handleHoverMouseOut);
-      document.removeEventListener('click', this.handleHoverClick);
+      // Remove hover event listeners
+      if (this.hoverHandler) {
+        document.removeEventListener('mouseover', this.hoverHandler);
+      }
+      if (this.clickHandler) {
+        document.removeEventListener('click', this.clickHandler);
+      }
       
+      // Clear overlay event listeners
       if (this.overlay) {
         this.overlay.removeEventListener('mousedown', this.handleScreenshotMouseDown);
         this.overlay.removeEventListener('mousemove', this.handleScreenshotMouseMove);
