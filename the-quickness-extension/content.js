@@ -47,18 +47,21 @@
       let ctrlAltPressed = false;
       
       document.addEventListener('keydown', (e) => {
+        // EXACT FABRIC BEHAVIOR: Ctrl+Alt enables capture modes
         if (e.ctrlKey && e.altKey) {
           ctrlAltPressed = true;
           
-          if (e.key.toLowerCase() === 'd') {
-            e.preventDefault();
-            this.startScreenshotMode();
-          } else if (e.key.toLowerCase() === 'h') {
-            e.preventDefault();
-            this.startHoverMode();
-          } else if (e.key.toLowerCase() === 'n') {
+          // Ctrl+Alt+N for quick notes (immediate activation)
+          if (e.key.toLowerCase() === 'n') {
             e.preventDefault();
             this.startQuickNoteMode();
+            return;
+          }
+          
+          // Ctrl+Alt held enables drag/hover modes (no specific key needed)
+          if (!this.isActive) {
+            // Show crosshair cursor to indicate ready for drag/hover
+            document.body.style.cursor = 'crosshair';
           }
         }
         
@@ -69,19 +72,33 @@
       });
 
       document.addEventListener('keyup', (e) => {
+        // EXACT FABRIC BEHAVIOR: Release Ctrl+Alt cancels modes
         if (!e.ctrlKey || !e.altKey) {
           ctrlAltPressed = false;
+          document.body.style.cursor = '';
+          
+          // Cancel hover mode when keys released (Fabric behavior)
           if (this.mode === 'hover' && this.isActive) {
             this.cancelMode();
           }
         }
       });
 
-      // Enable drag-to-screenshot when Ctrl+Alt held
+      // EXACT FABRIC BEHAVIOR: Ctrl+Alt+Drag for screenshot
       document.addEventListener('mousedown', (e) => {
         if (ctrlAltPressed && !this.isActive) {
           e.preventDefault();
           this.startScreenshotMode();
+        }
+      });
+      
+      // EXACT FABRIC BEHAVIOR: Ctrl+Alt+Hover for element capture
+      document.addEventListener('mousemove', (e) => {
+        if (ctrlAltPressed && !this.isActive && !this.isSelecting) {
+          // Start hover mode when moving mouse with Ctrl+Alt held
+          if (this.mode !== 'hover') {
+            this.startHoverMode();
+          }
         }
       });
     }
