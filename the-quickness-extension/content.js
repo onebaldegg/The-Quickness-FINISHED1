@@ -1,3 +1,4 @@
+/* global chrome */
 // THE QUICKNESS - Exact Fabric Clone (Clean Implementation)
 
 (function() {
