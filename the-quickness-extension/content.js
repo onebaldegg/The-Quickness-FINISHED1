@@ -37,14 +37,13 @@
       try {
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           if (request.action === 'downloadSuccess') {
-            this.showSuccessNotification(`PDF saved: ${request.filename}`);
+            this.showSuccessNotification(`PDF saved to Downloads: ${request.filename}`);
           } else if (request.action === 'downloadFailed') {
             this.showFailureNotification(`PDF save failed: ${request.filename}`);
           }
         });
       } catch (error) {
         console.log('Background script messaging unavailable:', error);
-        // Extension will work without background script messaging
       }
     }
     
