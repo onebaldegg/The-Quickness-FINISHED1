@@ -78,6 +78,7 @@ async function handleFolderSelection(event) {
       
       // Update the display
       document.getElementById('save-location').textContent = folderPath;
+      document.getElementById('reset-folder').style.display = 'block'; // Show reset option
       
       console.log('Visual folder selection complete:', folderPath);
       
