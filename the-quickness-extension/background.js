@@ -24,77 +24,96 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
     const base64 = btoa(binary);
     const dataUrl = `data:application/pdf;base64,${base64}`;
     
-    console.log('Background: PDF data prepared, starting download');
+    console.log('Background: PDF data prepared, checking custom save path');
     
-    // FIXED: Enhanced auto-saving with better error handling
-    chrome.downloads.download({
-      url: dataUrl,
-      filename: filename,  // Just filename, no folder path - goes to Downloads by default
-      saveAs: false,  // Critical: No user prompt
-      conflictAction: 'uniquify'  // Auto-rename if file exists
-    }, (downloadId) => {
-      if (chrome.runtime.lastError) {
-        console.error('Background: Primary download failed:', chrome.runtime.lastError);
-        
-        // Try multiple fallback approaches
-        const fallbackMethods = [
-          // Method 1: Try with explicit Downloads folder
-          () => chrome.downloads.download({
-            url: dataUrl,
-            filename: `Downloads/${filename}`,
-            saveAs: false,
-            conflictAction: 'uniquify'
-          }),
-          
-          // Method 2: Try with just filename again
-          () => chrome.downloads.download({
-            url: dataUrl,
-            filename: filename,
-            saveAs: false,
-            conflictAction: 'uniquify'
-          }),
-          
-          // Method 3: Last resort - allow user prompt
-          () => chrome.downloads.download({
-            url: dataUrl,
-            filename: filename,
-            saveAs: true,
-            conflictAction: 'uniquify'
-          })
-        ];
-        
-        let methodIndex = 0;
-        function tryNextMethod() {
-          if (methodIndex < fallbackMethods.length) {
-            console.log(`Background: Trying fallback method ${methodIndex + 1}`);
-            fallbackMethods[methodIndex]((fallbackDownloadId) => {
-              if (chrome.runtime.lastError) {
-                console.error(`Background: Fallback ${methodIndex + 1} failed:`, chrome.runtime.lastError);
-                methodIndex++;
-                tryNextMethod();
-              } else {
-                console.log(`Background: Success with fallback method ${methodIndex + 1}:`, fallbackDownloadId);
-                notifyContentScript(tabId, filename, true);
-              }
-            });
-          } else {
-            console.error('Background: All download methods failed');
-            notifyContentScript(tabId, filename, false);
-          }
-        }
-        
-        tryNextMethod();
-        
+    // Get custom save path from storage
+    chrome.storage.local.get(['customSavePath'], (result) => {
+      let downloadPath = filename; // Default to Downloads folder
+      
+      if (result.customSavePath) {
+        // Use custom path - construct relative path for Chrome downloads API
+        const customPath = result.customSavePath.replace(/\\/g, '/'); // Normalize path separators
+        downloadPath = `${customPath}/${filename}`;
+        console.log('Background: Using custom path:', downloadPath);
       } else {
-        console.log('Background: PDF successfully auto-saved to THE QUICKNESS folder:', downloadId);
-        notifyContentScript(tabId, filename, true);
+        console.log('Background: Using default Downloads folder');
       }
+      
+      // Start download with appropriate path
+      startDownload(dataUrl, downloadPath, filename, tabId);
     });
     
   } catch (error) {
     console.error('Background: Error in download process:', error);
     notifyContentScript(tabId, filename, false);
   }
+}
+
+function startDownload(dataUrl, downloadPath, filename, tabId) {
+  // FIXED: Use custom path or default Downloads
+  chrome.downloads.download({
+    url: dataUrl,
+    filename: downloadPath,
+    saveAs: false,  // Critical: No user prompt
+    conflictAction: 'uniquify'  // Auto-rename if file exists
+  }, (downloadId) => {
+    if (chrome.runtime.lastError) {
+      console.error('Background: Primary download failed:', chrome.runtime.lastError);
+      
+      // Try multiple fallback approaches
+      const fallbackMethods = [
+        // Method 1: Try with just filename (default Downloads)
+        () => chrome.downloads.download({
+          url: dataUrl,
+          filename: filename,
+          saveAs: false,
+          conflictAction: 'uniquify'
+        }),
+        
+        // Method 2: Try with Downloads prefix
+        () => chrome.downloads.download({
+          url: dataUrl,
+          filename: `Downloads/${filename}`,
+          saveAs: false,
+          conflictAction: 'uniquify'
+        }),
+        
+        // Method 3: Last resort - allow user prompt
+        () => chrome.downloads.download({
+          url: dataUrl,
+          filename: downloadPath,
+          saveAs: true,
+          conflictAction: 'uniquify'
+        })
+      ];
+      
+      let methodIndex = 0;
+      function tryNextMethod() {
+        if (methodIndex < fallbackMethods.length) {
+          console.log(`Background: Trying fallback method ${methodIndex + 1}`);
+          fallbackMethods[methodIndex]((fallbackDownloadId) => {
+            if (chrome.runtime.lastError) {
+              console.error(`Background: Fallback ${methodIndex + 1} failed:`, chrome.runtime.lastError);
+              methodIndex++;
+              tryNextMethod();
+            } else {
+              console.log(`Background: Success with fallback method ${methodIndex + 1}:`, fallbackDownloadId);
+              notifyContentScript(tabId, filename, true);
+            }
+          });
+        } else {
+          console.error('Background: All download methods failed');
+          notifyContentScript(tabId, filename, false);
+        }
+      }
+      
+      tryNextMethod();
+      
+    } else {
+      console.log('Background: PDF successfully saved:', downloadId);
+      notifyContentScript(tabId, filename, true);
+    }
+  });
 }
 
 function notifyContentScript(tabId, filename, success) {
