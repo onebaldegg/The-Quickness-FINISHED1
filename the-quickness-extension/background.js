@@ -76,11 +76,13 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
   }
 }
 
-function notifyContentScript(tabId, filename, success) {
+function notifyContentScript(tabId, filename, success, customMessage) {
   try {
+    const message = customMessage || `PDF ${success ? 'saved' : 'failed'}: ${filename}`;
     chrome.tabs.sendMessage(tabId, {
       action: success ? 'downloadSuccess' : 'downloadFailed',
-      filename: filename
+      filename: filename,
+      message: message
     }).catch((error) => {
       console.log('Background: Content script notification failed (this is normal):', error);
     });
