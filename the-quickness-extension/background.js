@@ -28,47 +28,46 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
     
     // Get custom save path from storage
     chrome.storage.local.get(['customSavePath'], (result) => {
-      let downloadPath = filename; // Default to Downloads folder
-      
       if (result.customSavePath) {
-        // Use custom path
-        const customPath = result.customSavePath.replace(/\\/g, '/'); // Normalize path separators
-        downloadPath = `${customPath}/${filename}`;
-        console.log('Background: Using custom path:', downloadPath);
+        console.log('Background: Custom path found:', result.customSavePath);
+        console.log('Background: Chrome Downloads API cannot save to absolute paths outside Downloads folder');
+        console.log('Background: Will save to Downloads folder but notify user about limitation');
+        
+        // Save to Downloads folder (Chrome limitation)
+        chrome.downloads.download({
+          url: dataUrl,
+          filename: filename,
+          saveAs: false,
+          conflictAction: 'uniquify'
+        }, (downloadId) => {
+          if (chrome.runtime.lastError) {
+            console.error('Background: Download failed:', chrome.runtime.lastError);
+            notifyContentScript(tabId, filename, false);
+          } else {
+            console.log('Background: PDF saved to Downloads folder:', downloadId);
+            notifyContentScript(tabId, filename, true, 'Downloads folder (Chrome security limitation)');
+          }
+        });
+        
       } else {
         console.log('Background: Using default Downloads folder');
+        
+        // Save to Downloads folder
+        chrome.downloads.download({
+          url: dataUrl,
+          filename: filename,
+          saveAs: false,
+          conflictAction: 'uniquify'
+        }, (downloadId) => {
+          if (chrome.runtime.lastError) {
+            console.error('Background: Download failed:', chrome.runtime.lastError);
+            notifyContentScript(tabId, filename, false);
+          } else {
+            console.log('Background: PDF saved to Downloads folder:', downloadId);
+            notifyContentScript(tabId, filename, true);
+          }
+        });
       }
-      
-      // Start download
-      chrome.downloads.download({
-        url: dataUrl,
-        filename: downloadPath,
-        saveAs: false,
-        conflictAction: 'uniquify'
-      }, (downloadId) => {
-        if (chrome.runtime.lastError) {
-          console.error('Background: Download failed:', chrome.runtime.lastError);
-          
-          // Fallback: try just filename (Downloads folder)
-          chrome.downloads.download({
-            url: dataUrl,
-            filename: filename,
-            saveAs: false,
-            conflictAction: 'uniquify'
-          }, (fallbackDownloadId) => {
-            if (chrome.runtime.lastError) {
-              console.error('Background: Fallback download also failed:', chrome.runtime.lastError);
-              notifyContentScript(tabId, filename, false);
-            } else {
-              console.log('Background: Fallback download succeeded:', fallbackDownloadId);
-              notifyContentScript(tabId, filename, true);
-            }
-          });
-        } else {
-          console.log('Background: PDF saved successfully:', downloadId);
-          notifyContentScript(tabId, filename, true);
-        }
-      });
     });
     
   } catch (error) {
