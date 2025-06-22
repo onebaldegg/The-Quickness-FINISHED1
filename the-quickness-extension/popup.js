@@ -92,6 +92,8 @@ async function handleFolderSelection() {
         button.textContent = '✅ Folder Set!';
         button.style.background = '#10b981';
         
+        console.log('Popup: Folder selection complete. Users can now capture content that will save to:', response.folderPath);
+        
         setTimeout(() => {
           button.textContent = originalText;
           button.style.background = '#007cff';
