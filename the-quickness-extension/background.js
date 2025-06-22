@@ -1,17 +1,18 @@
-// THE QUICKNESS - Background Service Worker (Enhanced)
+/* global chrome */
+// THE QUICKNESS - Background Service Worker (Downloads Folder Only)
 
 // Handle messages from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'downloadPDF') {
-    downloadPDFToFolder(request.pdfData, request.filename, sender.tab.id);
-    sendResponse({success: true}); // Immediate response to prevent context invalidation
+    downloadPDFToDownloads(request.pdfData, request.filename, sender.tab.id);
+    sendResponse({success: true});
   }
-  return true; // Keep message channel open for async response
+  return true;
 });
 
-function downloadPDFToFolder(pdfDataArray, filename, tabId) {
+function downloadPDFToDownloads(pdfDataArray, filename, tabId) {
   try {
-    console.log('Background: Starting PDF download process');
+    console.log('Background: Starting PDF download to Downloads folder');
     
     // Convert array back to Uint8Array
     const uint8Array = new Uint8Array(pdfDataArray);
@@ -24,49 +25,21 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
     const base64 = btoa(binary);
     const dataUrl = `data:application/pdf;base64,${base64}`;
     
-    console.log('Background: PDF data prepared, checking for custom save path');
+    console.log('Background: Saving PDF to Downloads folder:', filename);
     
-    // Get custom save path from storage
-    chrome.storage.local.get(['customSavePath'], (result) => {
-      if (result.customSavePath) {
-        console.log('Background: Custom path found:', result.customSavePath);
-        console.log('Background: Chrome Downloads API cannot save to absolute paths outside Downloads folder');
-        console.log('Background: Will save to Downloads folder but notify user about limitation');
-        
-        // Save to Downloads folder (Chrome limitation)
-        chrome.downloads.download({
-          url: dataUrl,
-          filename: filename,
-          saveAs: false,
-          conflictAction: 'uniquify'
-        }, (downloadId) => {
-          if (chrome.runtime.lastError) {
-            console.error('Background: Download failed:', chrome.runtime.lastError);
-            notifyContentScript(tabId, filename, false);
-          } else {
-            console.log('Background: PDF saved to Downloads folder:', downloadId);
-            notifyContentScript(tabId, filename, true, 'Downloads folder (Chrome security limitation)');
-          }
-        });
-        
+    // Save directly to Downloads folder (Chrome's default)
+    chrome.downloads.download({
+      url: dataUrl,
+      filename: filename,
+      saveAs: false,
+      conflictAction: 'uniquify'
+    }, (downloadId) => {
+      if (chrome.runtime.lastError) {
+        console.error('Background: Download failed:', chrome.runtime.lastError);
+        notifyContentScript(tabId, filename, false);
       } else {
-        console.log('Background: Using default Downloads folder');
-        
-        // Save to Downloads folder
-        chrome.downloads.download({
-          url: dataUrl,
-          filename: filename,
-          saveAs: false,
-          conflictAction: 'uniquify'
-        }, (downloadId) => {
-          if (chrome.runtime.lastError) {
-            console.error('Background: Download failed:', chrome.runtime.lastError);
-            notifyContentScript(tabId, filename, false);
-          } else {
-            console.log('Background: PDF saved to Downloads folder:', downloadId);
-            notifyContentScript(tabId, filename, true);
-          }
-        });
+        console.log('Background: PDF saved successfully to Downloads:', downloadId);
+        notifyContentScript(tabId, filename, true);
       }
     });
     
@@ -76,13 +49,11 @@ function downloadPDFToFolder(pdfDataArray, filename, tabId) {
   }
 }
 
-function notifyContentScript(tabId, filename, success, customMessage) {
+function notifyContentScript(tabId, filename, success) {
   try {
-    const message = customMessage || `PDF ${success ? 'saved' : 'failed'}: ${filename}`;
     chrome.tabs.sendMessage(tabId, {
       action: success ? 'downloadSuccess' : 'downloadFailed',
-      filename: filename,
-      message: message
+      filename: filename
     }).catch((error) => {
       console.log('Background: Content script notification failed (this is normal):', error);
     });
@@ -93,5 +64,5 @@ function notifyContentScript(tabId, filename, success, customMessage) {
 
 // Extension installation
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('THE QUICKNESS extension installed');
+  console.log('THE QUICKNESS extension installed - Downloads folder only');
 });
