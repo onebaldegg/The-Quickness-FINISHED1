@@ -919,6 +919,88 @@
       }
     }
 
+    async saveToCustomFolder(pdf, filename, tabId) {
+      try {
+        console.log('Attempting to save PDF using File System Access API');
+        
+        // Inject script to access the directory handle from the page context
+        const [result] = await chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          func: () => {
+            // This runs in the page context where the directory handle is stored
+            if (window.getTheQuicknessDirectory) {
+              const directoryHandle = window.getTheQuicknessDirectory();
+              return directoryHandle ? true : false;
+            }
+            return false;
+          }
+        });
+        
+        if (!result.result) {
+          console.log('No directory handle available');
+          return false;
+        }
+        
+        // Generate PDF blob
+        const pdfBlob = pdf.output('blob');
+        
+        // Send PDF data to page context for File System Access API writing
+        const [saveResult] = await chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          func: async (pdfArrayBuffer, filename) => {
+            try {
+              const directoryHandle = window.getTheQuicknessDirectory();
+              if (!directoryHandle) {
+                return { success: false, error: 'No directory handle' };
+              }
+              
+              // Create file handle
+              const fileHandle = await directoryHandle.getFileHandle(filename, {
+                create: true
+              });
+              
+              // Create writable stream
+              const writable = await fileHandle.createWritable();
+              
+              // Write PDF data
+              await writable.write(new Uint8Array(pdfArrayBuffer));
+              await writable.close();
+              
+              return { success: true };
+              
+            } catch (error) {
+              console.error('File System Access API write failed:', error);
+              return { success: false, error: error.message };
+            }
+          },
+          args: [await pdfBlob.arrayBuffer(), filename]
+        });
+        
+        if (saveResult.result.success) {
+          console.log('PDF saved successfully using File System Access API');
+          return true;
+        } else {
+          console.error('File System Access API save failed:', saveResult.result.error);
+          return false;
+        }
+        
+      } catch (error) {
+        console.error('Error in saveToCustomFolder:', error);
+        return false;
+      }
+    }
+    
+    fallbackToDownloads(pdf, filename) {
+      console.log('Using Downloads folder fallback');
+      try {
+        const pdfBlob = pdf.output('blob');
+        this.fallbackDownload(pdfBlob, filename);
+      } catch (error) {
+        console.error('Fallback download failed:', error);
+        alert('PDF save failed. Please try again.');
+      }
+    }
+
     fallbackDownload(pdfBlob, filename) {
       console.log('Using fallback download method');
       try {
