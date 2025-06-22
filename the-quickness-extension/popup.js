@@ -7,20 +7,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load and display current save location
   await loadSaveLocation();
   
-  // Setup folder selection button and input
+  // Setup folder selection button
   const chooseFolderBtn = document.getElementById('choose-folder-btn');
-  const folderInput = document.getElementById('folder-input');
   const resetLink = document.getElementById('reset-folder');
   
-  chooseFolderBtn.addEventListener('click', () => {
-    // Trigger the hidden file input with webkitdirectory
-    folderInput.click();
-  });
-  
-  folderInput.addEventListener('change', handleFolderSelection);
+  chooseFolderBtn.addEventListener('click', handleFolderSelection);
   
   resetLink.addEventListener('click', async () => {
-    await chrome.storage.local.remove(['customSavePath']);
+    await chrome.storage.local.remove(['customSavePath', 'directoryHandle']);
     document.getElementById('save-location').textContent = 'DOWNLOADS folder';
     resetLink.style.display = 'none';
     console.log('Reset to default Downloads folder');
@@ -49,57 +43,81 @@ async function loadSaveLocation() {
   }
 }
 
-async function handleFolderSelection(event) {
+async function handleFolderSelection() {
   try {
-    console.log('Processing folder selection from visual picker');
+    console.log('Popup: Starting folder selection process...');
     
-    const files = event.target.files;
-    if (files.length === 0) {
-      console.log('No folder selected');
+    // Get current active tab
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+    if (!tab) {
+      alert('No active tab found. Please open a webpage first.');
       return;
     }
     
-    // Get the path from the first file in the selected directory
-    const firstFile = files[0];
-    let folderPath = firstFile.webkitRelativePath;
+    // Show loading state
+    const button = document.getElementById('choose-folder-btn');
+    const originalText = button.textContent;
+    button.textContent = '⏳ Opening...';
+    button.disabled = true;
     
-    // Extract just the folder path (remove the filename)
-    const pathParts = folderPath.split('/');
-    pathParts.pop(); // Remove the filename
-    folderPath = pathParts.join('/');
-    
-    // For Windows, we need to construct the full path
-    // The webkitRelativePath only gives us relative path, so we'll use a smart approach
-    if (folderPath) {
-      console.log('Raw folder path from picker:', folderPath);
+    try {
+      // Inject the folder picker content script
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['folder-picker.js']
+      });
       
-      // Store the selected path
-      await chrome.storage.local.set({ customSavePath: folderPath });
+      console.log('Popup: Content script injected, requesting folder selection...');
       
-      // Update the display
-      document.getElementById('save-location').textContent = folderPath;
-      document.getElementById('reset-folder').style.display = 'block'; // Show reset option
+      // Send message to content script to show folder picker
+      const response = await chrome.tabs.sendMessage(tab.id, {
+        action: 'selectFolder'
+      });
       
-      console.log('Visual folder selection complete:', folderPath);
-      
-      // Show success feedback
-      const button = document.getElementById('choose-folder-btn');
-      const originalText = button.textContent;
-      button.textContent = '✅ Folder Set!';
-      button.style.background = '#10b981';
-      
-      setTimeout(() => {
+      if (response.success) {
+        console.log('Popup: Folder selected successfully:', response.folderPath);
+        
+        // Store the folder path
+        await chrome.storage.local.set({ 
+          customSavePath: response.folderPath,
+          selectedTabId: tab.id // Store tab ID for later PDF saving
+        });
+        
+        // Update display
+        document.getElementById('save-location').textContent = response.folderPath;
+        document.getElementById('reset-folder').style.display = 'block';
+        
+        // Show success feedback
+        button.textContent = '✅ Folder Set!';
+        button.style.background = '#10b981';
+        
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = '#007cff';
+          button.disabled = false;
+        }, 2000);
+        
+      } else {
+        console.error('Popup: Folder selection failed:', response.error);
+        alert('Folder selection failed: ' + response.error);
+        
+        // Reset button
         button.textContent = originalText;
-        button.style.background = '#007cff';
-      }, 2000);
+        button.disabled = false;
+      }
       
-    } else {
-      console.log('Could not determine folder path');
-      alert('Could not determine folder path. Please try again.');
+    } catch (error) {
+      console.error('Popup: Error with content script:', error);
+      alert('Could not access the page. Please try on a regular webpage (not chrome:// or extension pages).');
+      
+      // Reset button
+      button.textContent = originalText;
+      button.disabled = false;
     }
     
   } catch (error) {
-    console.error('Error processing folder selection:', error);
-    alert('Could not set folder path. Please try again.');
+    console.error('Popup: Error in folder selection:', error);
+    alert('Folder selection failed. Please try again.');
   }
 }
