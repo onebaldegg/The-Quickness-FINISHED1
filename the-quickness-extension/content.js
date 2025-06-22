@@ -823,30 +823,32 @@
         
         console.log('PDF generation complete, starting download');
         
-        // FIXED: Use background script for proper auto-saving
+        // FIXED: Use File System Access API for direct folder saving
         try {
-          const pdfData = pdf.output('arraybuffer');
+          const result = await chrome.storage.local.get(['customSavePath', 'selectedTabId']);
           
-          console.log('Sending PDF to background script for download');
-          
-          chrome.runtime.sendMessage({
-            action: 'downloadPDF',
-            pdfData: Array.from(new Uint8Array(pdfData)),
-            filename: filename
-          }, (response) => {
-            if (chrome.runtime.lastError) {
-              console.error('Failed to send to background script:', chrome.runtime.lastError);
-              // Use fallback method
-              this.fallbackDownload(pdf.output('blob'), filename);
+          if (result.customSavePath && result.selectedTabId) {
+            console.log('Using File System Access API for custom folder:', result.customSavePath);
+            
+            // Try to save using File System Access API
+            const saved = await this.saveToCustomFolder(pdf, filename, result.selectedTabId);
+            
+            if (saved) {
+              console.log('PDF saved successfully using File System Access API');
+              this.showSuccessNotification(`PDF saved to ${result.customSavePath}: ${filename}`);
             } else {
-              console.log('PDF sent to background script successfully');
-              // Success notification will come from background script message
+              console.log('File System Access API failed, falling back to Downloads');
+              this.fallbackToDownloads(pdf, filename);
             }
-          });
+            
+          } else {
+            console.log('No custom folder set, using Downloads folder');
+            this.fallbackToDownloads(pdf, filename);
+          }
           
-        } catch (downloadError) {
-          console.error('Background script communication failed:', downloadError);
-          this.fallbackDownload(pdf.output('blob'), filename);
+        } catch (error) {
+          console.error('Error determining save location:', error);
+          this.fallbackToDownloads(pdf, filename);
         }
         
         // Close modal and cancel mode
