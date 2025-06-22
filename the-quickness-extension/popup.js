@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Setup folder selection button and input
   const chooseFolderBtn = document.getElementById('choose-folder-btn');
   const folderInput = document.getElementById('folder-input');
+  const resetLink = document.getElementById('reset-folder');
   
   chooseFolderBtn.addEventListener('click', () => {
     // Trigger the hidden file input with webkitdirectory
@@ -17,6 +18,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   folderInput.addEventListener('change', handleFolderSelection);
+  
+  resetLink.addEventListener('click', async () => {
+    await chrome.storage.local.remove(['customSavePath']);
+    document.getElementById('save-location').textContent = 'DOWNLOADS folder';
+    resetLink.style.display = 'none';
+    console.log('Reset to default Downloads folder');
+  });
 });
 
 async function loadSaveLocation() {
