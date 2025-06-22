@@ -31,17 +31,21 @@ async function loadSaveLocation() {
   try {
     const result = await chrome.storage.local.get(['customSavePath']);
     const saveLocationElement = document.getElementById('save-location');
+    const resetLink = document.getElementById('reset-folder');
     
     if (result.customSavePath) {
       saveLocationElement.textContent = result.customSavePath;
+      resetLink.style.display = 'block'; // Show reset link
       console.log('Loaded custom save path:', result.customSavePath);
     } else {
       saveLocationElement.textContent = 'DOWNLOADS folder';
+      resetLink.style.display = 'none'; // Hide reset link
       console.log('Using default Downloads folder');
     }
   } catch (error) {
     console.error('Error loading save location:', error);
     document.getElementById('save-location').textContent = 'DOWNLOADS folder';
+    document.getElementById('reset-folder').style.display = 'none';
   }
 }
 
