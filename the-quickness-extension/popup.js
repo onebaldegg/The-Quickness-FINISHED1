@@ -1,5 +1,5 @@
 /* global chrome */
-// THE QUICKNESS - Popup Script for Folder Selection
+// THE QUICKNESS - Popup Script (Text Input Method)
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('Popup loaded');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   chooseFolderBtn.addEventListener('click', handleFolderSelection);
   
   resetLink.addEventListener('click', async () => {
-    await chrome.storage.local.remove(['customSavePath', 'directoryHandle']);
+    await chrome.storage.local.remove(['customSavePath']);
     document.getElementById('save-location').textContent = 'DOWNLOADS folder';
     resetLink.style.display = 'none';
     console.log('Reset to default Downloads folder');
@@ -29,11 +29,11 @@ async function loadSaveLocation() {
     
     if (result.customSavePath) {
       saveLocationElement.textContent = result.customSavePath;
-      resetLink.style.display = 'block'; // Show reset link
+      resetLink.style.display = 'block';
       console.log('Loaded custom save path:', result.customSavePath);
     } else {
       saveLocationElement.textContent = 'DOWNLOADS folder';
-      resetLink.style.display = 'none'; // Hide reset link
+      resetLink.style.display = 'none';
       console.log('Using default Downloads folder');
     }
   } catch (error) {
@@ -45,81 +45,42 @@ async function loadSaveLocation() {
 
 async function handleFolderSelection() {
   try {
-    console.log('Popup: Starting folder selection process...');
+    console.log('Opening folder path input dialog');
     
-    // Get current active tab
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const currentPath = document.getElementById('save-location').textContent;
+    const defaultText = currentPath === 'DOWNLOADS folder' ? '' : currentPath;
     
-    if (!tab) {
-      alert('No active tab found. Please open a webpage first.');
+    const customPath = prompt(
+      'Enter your preferred download folder path:\n\n' +
+      'Examples:\n' +
+      '• C:\\Users\\YourName\\Downloads\\The Quickness Images\n' +
+      '• /Users/YourName/Downloads/The Quickness Images\n' +
+      '• Leave empty to use default Downloads folder',
+      defaultText
+    );
+    
+    if (customPath === null) {
+      // User cancelled
       return;
     }
     
-    // Show loading state
-    const button = document.getElementById('choose-folder-btn');
-    const originalText = button.textContent;
-    button.textContent = '⏳ Opening...';
-    button.disabled = true;
-    
-    try {
-      // Inject the folder picker content script
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['folder-picker.js']
-      });
-      
-      console.log('Popup: Content script injected, requesting folder selection...');
-      
-      // Send message to content script to show folder picker
-      const response = await chrome.tabs.sendMessage(tab.id, {
-        action: 'selectFolder'
-      });
-      
-      if (response.success) {
-        console.log('Popup: Folder selected successfully:', response.folderPath);
-        
-        // Store the folder path
-        await chrome.storage.local.set({ 
-          customSavePath: response.folderPath,
-          selectedTabId: tab.id // Store tab ID for later PDF saving
-        });
-        
-        // Update display
-        document.getElementById('save-location').textContent = response.folderPath;
-        document.getElementById('reset-folder').style.display = 'block';
-        
-        // Show success feedback
-        button.textContent = '✅ Folder Set!';
-        button.style.background = '#10b981';
-        
-        console.log('Popup: Folder selection complete. Users can now capture content that will save to:', response.folderPath);
-        
-        setTimeout(() => {
-          button.textContent = originalText;
-          button.style.background = '#007cff';
-          button.disabled = false;
-        }, 2000);
-        
-      } else {
-        console.error('Popup: Folder selection failed:', response.error);
-        alert('Folder selection failed: ' + response.error);
-        
-        // Reset button
-        button.textContent = originalText;
-        button.disabled = false;
-      }
-      
-    } catch (error) {
-      console.error('Popup: Error with content script:', error);
-      alert('Could not access the page. Please try on a regular webpage (not chrome:// or extension pages).');
-      
-      // Reset button
-      button.textContent = originalText;
-      button.disabled = false;
+    if (customPath && customPath.trim()) {
+      // User entered a custom path
+      const trimmedPath = customPath.trim();
+      await chrome.storage.local.set({ customSavePath: trimmedPath });
+      document.getElementById('save-location').textContent = trimmedPath;
+      document.getElementById('reset-folder').style.display = 'block';
+      console.log('Custom path set:', trimmedPath);
+    } else {
+      // User wants to use default (empty input)
+      await chrome.storage.local.remove(['customSavePath']);
+      document.getElementById('save-location').textContent = 'DOWNLOADS folder';
+      document.getElementById('reset-folder').style.display = 'none';
+      console.log('Reset to default Downloads folder');
     }
     
   } catch (error) {
-    console.error('Popup: Error in folder selection:', error);
-    alert('Folder selection failed. Please try again.');
+    console.error('Error setting folder path:', error);
+    alert('Could not set folder path. Please try again.');
   }
 }
