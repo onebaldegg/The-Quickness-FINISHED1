@@ -7,9 +7,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load and display current save location
   await loadSaveLocation();
   
-  // Setup folder selection button
+  // Setup folder selection button and input
   const chooseFolderBtn = document.getElementById('choose-folder-btn');
-  chooseFolderBtn.addEventListener('click', handleFolderSelection);
+  const folderInput = document.getElementById('folder-input');
+  
+  chooseFolderBtn.addEventListener('click', () => {
+    // Trigger the hidden file input with webkitdirectory
+    folderInput.click();
+  });
+  
+  folderInput.addEventListener('change', handleFolderSelection);
 });
 
 async function loadSaveLocation() {
