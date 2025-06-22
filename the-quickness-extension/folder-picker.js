@@ -30,16 +30,30 @@
         mode: 'readwrite' // Need write access to save PDFs
       });
       
-      console.log('Content Script: Directory selected:', directoryHandle.name);
-      
       // Store the directory handle globally for later use
       window.theQuicknessDirectoryHandle = directoryHandle;
+      
+      // Try to get a more descriptive path
+      let displayPath = directoryHandle.name;
+      
+      // For better user experience, try to get more path info if available
+      try {
+        // Some browsers might provide more detailed path information
+        if (directoryHandle.kind === 'directory') {
+          displayPath = `📁 ${directoryHandle.name}`;
+        }
+      } catch (e) {
+        // Fallback to just the name
+        displayPath = directoryHandle.name;
+      }
+      
+      console.log('Content Script: Directory selected:', displayPath);
       
       // Send success response with folder info
       sendResponse({
         success: true,
         folderName: directoryHandle.name,
-        folderPath: directoryHandle.name // For now, just use name (will show in popup)
+        folderPath: displayPath
       });
       
     } catch (error) {
