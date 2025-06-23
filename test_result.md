@@ -102,7 +102,11 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test THE QUICKNESS Chrome extension comprehensively. The extension is located in `/app/the-quickness-extension/` directory."
+user_problem_statement: "Major changes to THE QUICKNESS Chrome extension:
+
+Change 1: Remove popup menu completely. When extension icon is clicked, immediately take screenshot of visible viewport and show note modal with THE QUICKNESS logo, source URL, screenshot, and user notes. Use purple background from logo.
+
+Change 2: Auto-save PDF in landscape mode with specific layout: Logo top-left, source URL top-right, screenshot below spanning across, user notes below screenshot. Must preserve links from screenshots."
 
 frontend:
   - task: "Extension Popup Interface"
