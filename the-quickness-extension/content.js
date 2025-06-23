@@ -75,56 +75,86 @@
       console.log('Taking viewport screenshot...');
 
       try {
-        // Take screenshot of visible viewport
+        // Take screenshot of visible viewport with improved settings
         const canvas = await window.html2canvas(document.body, {
           height: window.innerHeight,
           width: window.innerWidth,
           x: 0,
           y: window.scrollY,
-          useCORS: true,
-          allowTaint: false,
-          foreignObjectRendering: true,
+          useCORS: false, // Disable CORS to avoid issues
+          allowTaint: true, // Allow tainted canvas
+          foreignObjectRendering: false, // Disable for better compatibility
           scale: 1,
           logging: false,
           backgroundColor: '#ffffff',
           removeContainer: true,
-          imageTimeout: 15000,
-          onclone: (clonedDoc) => {
-            // Remove problematic elements that might cause CORS issues
-            clonedDoc.querySelectorAll('iframe:not([src^="data:"]):not([src^="blob:"])').forEach(el => {
-              if (!el.src.startsWith(window.location.origin)) {
-                el.remove();
-              }
-            });
-            
-            // Handle external images - replace with placeholders if needed
-            clonedDoc.querySelectorAll('img').forEach(img => {
-              if (img.src && !img.src.startsWith('data:') && !img.src.startsWith('blob:') && !img.src.startsWith(window.location.origin)) {
-                // For external images, try to preserve them but have fallback
-                img.crossOrigin = 'anonymous';
-              }
-            });
+          imageTimeout: 5000,
+          ignoreElements: (element) => {
+            // Ignore our own modal and extension elements
+            return element.classList.contains('tq-modal-backdrop') || 
+                   element.classList.contains('tq-note-modal') ||
+                   element.classList.contains('tq-success-notification') ||
+                   element.classList.contains('tq-failure-notification');
           }
         });
 
-        // Convert canvas to high-quality data URL
-        const screenshotDataUrl = canvas.toDataURL('image/png', 1.0);
-        
-        console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
+        // Convert to blob first, then to data URL for better handling
+        canvas.toBlob((blob) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const screenshotDataUrl = reader.result;
+            console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
 
-        this.capturedData = {
-          type: 'viewport_screenshot',
-          url: window.location.href,
-          title: document.title,
-          screenshot: screenshotDataUrl
-        };
+            this.capturedData = {
+              type: 'viewport_screenshot',
+              url: window.location.href,
+              title: document.title,
+              screenshot: screenshotDataUrl
+            };
 
-        console.log('Screenshot data stored, showing note modal');
-        this.showNoteModal();
+            console.log('Screenshot data stored, showing note modal');
+            this.showNoteModal();
+          };
+          reader.onerror = () => {
+            console.error('Failed to convert blob to data URL');
+            alert('Screenshot processing failed.');
+          };
+          reader.readAsDataURL(blob);
+        }, 'image/png', 0.9);
 
       } catch (error) {
         console.error('Screenshot failed:', error);
-        alert('Screenshot capture failed. This may be due to website security restrictions.');
+        
+        // Fallback: try simpler approach
+        try {
+          console.log('Trying fallback screenshot method...');
+          const simpleCanvas = await window.html2canvas(document.body, {
+            height: window.innerHeight,
+            width: window.innerWidth,
+            x: 0,
+            y: window.scrollY,
+            useCORS: false,
+            allowTaint: true,
+            scale: 0.8,
+            logging: false
+          });
+          
+          const fallbackDataUrl = simpleCanvas.toDataURL('image/png', 0.8);
+          
+          this.capturedData = {
+            type: 'viewport_screenshot',
+            url: window.location.href,
+            title: document.title,
+            screenshot: fallbackDataUrl
+          };
+          
+          console.log('Fallback screenshot captured, showing note modal');
+          this.showNoteModal();
+          
+        } catch (fallbackError) {
+          console.error('Fallback screenshot also failed:', fallbackError);
+          alert('Screenshot capture failed. This may be due to website security restrictions.');
+        }
       }
     }
 
