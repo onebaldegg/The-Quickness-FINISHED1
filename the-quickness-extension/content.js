@@ -86,7 +86,7 @@
           foreignObjectRendering: true,
           scale: 1,
           logging: false,
-          backgroundColor: null,
+          backgroundColor: '#ffffff',
           removeContainer: true,
           imageTimeout: 15000,
           onclone: (clonedDoc) => {
@@ -97,40 +97,29 @@
               }
             });
             
-            // Handle external images
+            // Handle external images - replace with placeholders if needed
             clonedDoc.querySelectorAll('img').forEach(img => {
-              if (img.src && !img.src.startsWith('data:') && !img.src.startsWith('blob:')) {
-                const testImg = new Image();
-                testImg.crossOrigin = 'anonymous';
-                testImg.onerror = () => {
-                  img.style.background = '#f3f4f6';
-                  img.style.border = '2px dashed #d1d5db';
-                  img.style.display = 'flex';
-                  img.style.alignItems = 'center';
-                  img.style.justifyContent = 'center';
-                  img.style.color = '#6b7280';
-                  img.style.fontSize = '12px';
-                  img.alt = 'Image blocked by CORS';
-                  img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDlWN0M21IDUuOSAxOS4xIDUgMTggNUg2QzQuOSA1IDQgNS45IDQgN1Y5SDIxWiIgZmlsbD0iIzZCNzI4MCIvPgo8cGF0aCBkPSJNMjEgMTBIMFYxN0MwIDE4LjEgMC45IDE5IDIgMTlIMjJDMjMuMSAxOSAyNCAxOC4xIDI0IDE3VjEwSDIxWiIgZmlsbD0iIzZCNzI4MCIvPgo8L3N2Zz4K';
-                };
-                testImg.src = img.src;
+              if (img.src && !img.src.startsWith('data:') && !img.src.startsWith('blob:') && !img.src.startsWith(window.location.origin)) {
+                // For external images, try to preserve them but have fallback
+                img.crossOrigin = 'anonymous';
               }
             });
           }
         });
 
-        // Extract all links from the visible viewport
-        const links = this.extractViewportLinks();
+        // Convert canvas to high-quality data URL
+        const screenshotDataUrl = canvas.toDataURL('image/png', 1.0);
+        
+        console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
 
         this.capturedData = {
           type: 'viewport_screenshot',
           url: window.location.href,
           title: document.title,
-          screenshot: canvas.toDataURL('image/png'),
-          links: links
+          screenshot: screenshotDataUrl
         };
 
-        console.log('Screenshot captured, showing note modal');
+        console.log('Screenshot data stored, showing note modal');
         this.showNoteModal();
 
       } catch (error) {
