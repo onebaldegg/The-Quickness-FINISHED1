@@ -331,11 +331,9 @@
         border: 2px solid #333;
       `;
       
-      // Create a simple logo using CSS since external images are blocked by CORS
+      // Create logo using the actual logo image
       const logoHtml = `
-        <div style="display: inline-block; background: linear-gradient(45deg, #f59e0b, #d97706); color: white; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-          THE QUICKNESS
-        </div>
+        <img src="${LOGO_BASE64}" alt="THE QUICKNESS" style="height: 42px; width: auto; border-radius: 6px;">
       `;
       
       this.modal.innerHTML = `
