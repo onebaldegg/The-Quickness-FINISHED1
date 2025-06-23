@@ -1,5 +1,17 @@
 /* global chrome */
-// THE QUICKNESS - Background Service Worker (Downloads Folder Only)
+// THE QUICKNESS - Background Service Worker (Icon Click to Screenshot)
+
+// Handle extension icon clicks
+chrome.action.onClicked.addListener((tab) => {
+  console.log('THE QUICKNESS icon clicked, triggering screenshot');
+  
+  // Send message to content script to take screenshot
+  chrome.tabs.sendMessage(tab.id, {
+    action: 'takeScreenshot'
+  }).catch((error) => {
+    console.log('Content script not ready:', error);
+  });
+});
 
 // Handle messages from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
