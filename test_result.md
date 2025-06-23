@@ -121,6 +121,19 @@ frontend:
         -agent: "main"
         -comment: "Completely rewrote extension to remove all keyboard shortcuts and popup. Now clicking extension icon triggers immediate viewport screenshot and shows note modal with purple background and logo. Removed all hover/drag functionality per user requirements."
 
+backend:
+  - task: "Backend API Components"
+    implemented: true
+    working: "NA"
+    file: "/app/backend_test.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: "NA"
+        -agent: "testing"
+        -comment: "THE QUICKNESS is a Chrome extension that operates entirely within the browser. It does not have any backend API dependencies or server components. All functionality is implemented in JavaScript within the browser extension context."
+
   - task: "Note Modal with Logo and Purple Background"
     implemented: true
     working: false
