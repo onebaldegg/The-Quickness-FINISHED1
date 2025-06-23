@@ -189,16 +189,16 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Extension Popup Interface"
-    - "Quick Notes (Ctrl+Alt+N)"
-    - "Screenshot Capture (Ctrl+Alt+Drag)"
-    - "Hover Capture (Ctrl+Alt+Hover)"
-    - "Error Handling"
-    - "File System Features"
+    - "Icon Click Screenshot Functionality"
+    - "Note Modal with Logo and Purple Background"
+    - "Landscape PDF Generation with Specific Layout"
+    - "Link Preservation in Screenshots"
+    - "Background Script Icon Click Handler"
+    - "Manifest Updates for Icon Click"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
 
 agent_communication:
-    -agent: "testing"
-    -message: "I've completed a comprehensive code review of THE QUICKNESS Chrome extension. Due to limitations in the testing environment, I wasn't able to directly test the extension in a Chrome browser. However, I've thoroughly analyzed the code and can confirm that all the required functionality appears to be properly implemented. The extension includes the three main features (Quick Notes, Screenshot Capture, and Hover Capture) as well as proper error handling and file system features. The code is well-structured and includes fallback mechanisms for potential issues like CORS with external images. Based on my analysis, the extension should work as expected when installed in Chrome."
+    -agent: "main"
+    -message: "I have completely rewritten THE QUICKNESS extension per user requirements. Major changes include: 1) Removed all keyboard shortcuts and popup menu, 2) Extension icon click now immediately takes viewport screenshot, 3) New note modal with purple background and logo display, 4) Landscape PDF generation with specific layout (logo top-left, URL top-right, screenshot spanning, notes below), 5) Link extraction and preservation from screenshots. All previous functionality (hover, drag, keyboard shortcuts) has been removed. The extension now has a simple workflow: click icon → screenshot → add notes → save landscape PDF. Ready for testing to ensure the new functionality works properly."
