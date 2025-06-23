@@ -39,7 +39,7 @@ function downloadPDFToDownloads(pdfDataArray, filename, tabId) {
     
     console.log('Background: Saving PDF to Downloads folder:', filename);
     
-    // Save directly to Downloads folder (Chrome's default)
+    // Save directly to Downloads folder (Chrome's default) - no auto-open
     chrome.downloads.download({
       url: dataUrl,
       filename: filename,
@@ -52,6 +52,9 @@ function downloadPDFToDownloads(pdfDataArray, filename, tabId) {
       } else {
         console.log('Background: PDF saved successfully to Downloads:', downloadId);
         notifyContentScript(tabId, filename, true);
+        
+        // Do not auto-open the PDF - just save it
+        console.log('Background: PDF saved without auto-opening');
       }
     });
     
