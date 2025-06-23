@@ -140,52 +140,86 @@
       this.modal.className = 'tq-note-modal';
       this.modal.style.cssText = `
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: #b885d8; border-radius: 12px; padding: 24px; 
+        background: #b885d8; border-radius: 8px; padding: 17px; 
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        z-index: 2147483647; min-width: 500px; max-width: 700px;
-        border: 3px solid #333;
+        z-index: 2147483647; min-width: 350px; max-width: 490px;
+        border: 2px solid #333;
       `;
       
-      // Logo from external source (The Quickness logo)
-      const logoBase64 = 'https://github.com/onebaldegg/logo/raw/main/LOGO%202.png';
+      // Create a simple logo using CSS since external images are blocked by CORS
+      const logoHtml = `
+        <div style="display: inline-block; background: linear-gradient(45deg, #f59e0b, #d97706); color: white; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+          THE QUICKNESS
+        </div>
+      `;
       
       this.modal.innerHTML = `
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-          <img src="${logoBase64}" alt="THE QUICKNESS" style="height: 60px; width: auto; margin-right: 20px;">
-          <div style="color: white; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-            THE QUICKNESS
-          </div>
+        <div style="display: flex; align-items: center; margin-bottom: 14px;">
+          ${logoHtml}
         </div>
         
-        <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-          <div style="font-size: 12px; color: #666; word-break: break-all; margin-bottom: 12px;">
+        <div style="background: white; border-radius: 6px; padding: 11px; margin-bottom: 11px;">
+          <div style="font-size: 10px; color: #666; word-break: break-all; margin-bottom: 8px;">
             <strong>Source:</strong> ${this.capturedData.url}
           </div>
           
-          <div style="margin-bottom: 16px;">
-            <div style="font-weight: 500; margin-bottom: 8px; color: #333;">Screenshot Preview:</div>
-            <img src="${this.capturedData.screenshot}" style="max-width: 100%; max-height: 200px; border-radius: 4px; border: 1px solid #ddd;" onload="console.log('Screenshot image loaded successfully')" onerror="console.error('Screenshot image failed to load')">
+          <div style="margin-bottom: 11px;">
+            <div style="font-weight: 500; margin-bottom: 6px; color: #333; font-size: 12px;">Screenshot Preview:</div>
+            <div id="screenshot-container" style="min-height: 140px; border: 1px solid #ddd; border-radius: 4px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+              <img id="screenshot-img" style="max-width: 100%; max-height: 140px; border-radius: 4px; display: none;" />
+              <div id="screenshot-loading" style="color: #666; font-size: 12px;">Loading screenshot...</div>
+            </div>
           </div>
           
           <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #333;">Your Note:</label>
-            <textarea id="tq-note-input" style="width: 100%; min-height: 100px; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" placeholder="Add your note here..."></textarea>
+            <label style="display: block; font-weight: 500; margin-bottom: 4px; color: #333; font-size: 12px;">Your Note:</label>
+            <textarea id="tq-note-input" style="width: 100%; min-height: 70px; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px;" placeholder="Add your note here..."></textarea>
           </div>
         </div>
         
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
-          <button id="tq-cancel-btn" style="padding: 12px 24px; border: none; border-radius: 6px; background: #6c757d; color: white; cursor: pointer; font-weight: 500;">Cancel</button>
-          <button id="tq-save-btn" style="padding: 12px 24px; border: none; border-radius: 6px; background: #007cff; color: white; cursor: pointer; font-weight: 500;">Save PDF</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button id="tq-cancel-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Cancel</button>
+          <button id="tq-save-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #007cff; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Save PDF</button>
         </div>
       `;
       
       document.body.appendChild(backdrop);
       document.body.appendChild(this.modal);
       
+      // Load screenshot after modal is added to DOM
+      this.loadScreenshotInModal();
+      
       this.bindModalEvents(backdrop);
       
       const textarea = this.modal.querySelector('#tq-note-input');
       setTimeout(() => textarea.focus(), 100);
+    }
+
+    loadScreenshotInModal() {
+      const img = this.modal.querySelector('#screenshot-img');
+      const loading = this.modal.querySelector('#screenshot-loading');
+      
+      if (!this.capturedData.screenshot) {
+        loading.textContent = 'No screenshot available';
+        return;
+      }
+      
+      console.log('Loading screenshot in modal, data URL length:', this.capturedData.screenshot.length);
+      
+      img.onload = () => {
+        console.log('Screenshot loaded successfully in modal');
+        img.style.display = 'block';
+        loading.style.display = 'none';
+      };
+      
+      img.onerror = () => {
+        console.error('Screenshot failed to load in modal');
+        loading.textContent = 'Screenshot failed to load';
+        loading.style.color = '#dc3545';
+      };
+      
+      // Set the screenshot source
+      img.src = this.capturedData.screenshot;
     }
 
     bindModalEvents(backdrop) {
