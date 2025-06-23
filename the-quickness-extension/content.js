@@ -73,6 +73,9 @@
       }
 
       console.log('Taking viewport screenshot...');
+      
+      // Show loading indicator
+      this.showLoadingIndicator();
 
       try {
         // Wait for fonts to load for better quality
@@ -101,6 +104,7 @@
                    element.classList.contains('tq-note-modal') ||
                    element.classList.contains('tq-success-notification') ||
                    element.classList.contains('tq-failure-notification') ||
+                   element.classList.contains('tq-loading-indicator') ||
                    element.tagName === 'IFRAME' ||
                    element.tagName === 'VIDEO' ||
                    element.tagName === 'EMBED' ||
@@ -187,6 +191,9 @@
           }
         });
 
+        // Hide loading indicator
+        this.hideLoadingIndicator();
+
         // Convert to high-quality data URL
         const screenshotDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
@@ -206,8 +213,70 @@
         this.showNoteModal();
 
       } catch (error) {
+        this.hideLoadingIndicator();
         console.error('Screenshot failed:', error);
         alert('Screenshot capture failed due to browser security restrictions. This can happen on websites with external content.');
+      }
+    }
+
+    showLoadingIndicator() {
+      // Remove any existing indicator
+      this.hideLoadingIndicator();
+      
+      const indicator = document.createElement('div');
+      indicator.className = 'tq-loading-indicator';
+      indicator.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(184, 133, 216, 0.95);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 2147483647;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 2px solid #333;
+      `;
+      
+      indicator.innerHTML = `
+        <div style="
+          width: 20px;
+          height: 20px;
+          border: 3px solid transparent;
+          border-top: 3px solid white;
+          border-radius: 50%;
+          animation: tq-spin 1s linear infinite;
+        "></div>
+        <span>Taking screenshot...</span>
+      `;
+      
+      // Add CSS animation
+      if (!document.querySelector('#tq-spinner-style')) {
+        const style = document.createElement('style');
+        style.id = 'tq-spinner-style';
+        style.textContent = `
+          @keyframes tq-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      document.body.appendChild(indicator);
+    }
+
+    hideLoadingIndicator() {
+      const existing = document.querySelector('.tq-loading-indicator');
+      if (existing) {
+        existing.remove();
       }
     }
 
