@@ -196,7 +196,7 @@
           
           <div style="margin-bottom: 16px;">
             <div style="font-weight: 500; margin-bottom: 8px; color: #333;">Screenshot Preview:</div>
-            <img src="${this.capturedData.screenshot}" style="max-width: 100%; max-height: 200px; border-radius: 4px; border: 1px solid #ddd;">
+            <img src="${this.capturedData.screenshot}" style="max-width: 100%; max-height: 200px; border-radius: 4px; border: 1px solid #ddd;" onload="console.log('Screenshot image loaded successfully')" onerror="console.error('Screenshot image failed to load')">
           </div>
           
           <div>
