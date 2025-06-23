@@ -109,77 +109,77 @@ Change 1: Remove popup menu completely. When extension icon is clicked, immediat
 Change 2: Auto-save PDF in landscape mode with specific layout: Logo top-left, source URL top-right, screenshot below spanning across, user notes below screenshot. Must preserve links from screenshots."
 
 frontend:
-  - task: "Extension Popup Interface"
+  - task: "Icon Click Screenshot Functionality"
     implemented: true
-    working: true
-    file: "/app/the-quickness-extension/popup.html"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        -working: true
-        -agent: "testing"
-        -comment: "The popup interface correctly displays the extension name, logo placeholder, and all three keyboard shortcuts (Ctrl+Alt+Drag for Screenshot Region, Ctrl+Alt+Hover for Capture Hover, and Ctrl+Alt+N for Quick Note). The status message indicates the extension is ready, and the help text correctly mentions that captures will be saved as PDFs in the Downloads/THE QUICKNESS folder. The version number (v1.0) is also displayed."
-
-  - task: "Quick Notes (Ctrl+Alt+N)"
-    implemented: true
-    working: true
+    working: false
     file: "/app/the-quickness-extension/content.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        -working: true
-        -agent: "testing"
-        -comment: "The Quick Notes feature works as expected. Pressing Ctrl+Alt+N opens a note modal with the current page URL. Users can type notes and save them as PDFs. The PDFs are automatically saved to the Downloads/THE QUICKNESS folder with the correct filename format (timestamp_first-two-words.pdf). The PDF contains the URL, note text, and proper formatting."
+        -working: false
+        -agent: "main"
+        -comment: "Completely rewrote extension to remove all keyboard shortcuts and popup. Now clicking extension icon triggers immediate viewport screenshot and shows note modal with purple background and logo. Removed all hover/drag functionality per user requirements."
 
-  - task: "Screenshot Capture (Ctrl+Alt+Drag)"
+  - task: "Note Modal with Logo and Purple Background"
     implemented: true
-    working: true
+    working: false
     file: "/app/the-quickness-extension/content.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        -working: true
-        -agent: "testing"
-        -comment: "The Screenshot Capture feature works as expected. Holding Ctrl+Alt shows a crosshair cursor, and dragging creates a selection overlay with a blue border. Completing the selection opens a note modal, and saving creates a PDF with the screenshot. The code includes proper error handling and fallback mechanisms for CORS issues with external images."
+        -working: false
+        -agent: "main"
+        -comment: "Created new note modal with THE QUICKNESS logo, purple background (#b885d8), source URL display, screenshot preview, and note input area. Modal appears after screenshot is taken."
 
-  - task: "Hover Capture (Ctrl+Alt+Hover)"
+  - task: "Landscape PDF Generation with Specific Layout"
     implemented: true
-    working: true
+    working: false
     file: "/app/the-quickness-extension/content.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        -working: true
-        -agent: "testing"
-        -comment: "The Hover Capture feature works as expected. Holding Ctrl+Alt and hovering over elements highlights them with an amber outline (#f59e0b). Clicking a highlighted element captures it, and the captured content appears in the note modal. The code properly handles different types of elements (images, text) and preserves links in the captured content."
+        -working: false
+        -agent: "main"
+        -comment: "Updated PDF generation to landscape mode with specific layout: logo top-left, source URL top-right, screenshot spanning below, user notes at bottom. Extracts and preserves links from viewport screenshots."
 
-  - task: "Error Handling"
+  - task: "Link Preservation in Screenshots"
     implemented: true
-    working: true
+    working: false
     file: "/app/the-quickness-extension/content.js"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
-        -working: true
-        -agent: "testing"
-        -comment: "Error handling is properly implemented. The ESC key cancels operations, clicking outside the modal cancels, and there are fallback mechanisms for CORS issues with external images. The code includes proper cleanup of event listeners and restoration of original styles."
+        -working: false
+        -agent: "main"
+        -comment: "Added extractViewportLinks() function to capture all visible links in viewport with their positions and URLs. Links are included in the generated PDF for reference."
 
-  - task: "File System Features"
+  - task: "Background Script Icon Click Handler"
     implemented: true
-    working: true
+    working: false
     file: "/app/the-quickness-extension/background.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        -working: true
-        -agent: "testing"
-        -comment: "The file system features work as expected. PDFs are auto-saved to the Downloads/THE QUICKNESS folder with the correct filename format (timestamp_first-two-words.pdf). The PDFs contain clickable links, and the folder is created automatically if it doesn't exist. The background.js script includes fallback options if the primary download method fails."
+        -working: false
+        -agent: "main"
+        -comment: "Added chrome.action.onClicked listener to handle extension icon clicks. Sends 'takeScreenshot' message to content script to trigger the screenshot process."
+
+  - task: "Manifest Updates for Icon Click"
+    implemented: true
+    working: false
+    file: "/app/the-quickness-extension/manifest.json"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: false
+        -agent: "main"
+        -comment: "Removed default_popup from manifest.json to enable icon click handling. Extension now responds to clicks instead of showing popup."
 
 metadata:
   created_by: "testing_agent"
