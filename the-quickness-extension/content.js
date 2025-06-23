@@ -421,6 +421,11 @@
         
         // Screenshot below logo and URL
         let yPos = margin + 20;
+        let screenshotX = 0;
+        let screenshotY = 0;
+        let screenshotWidth = 0;
+        let screenshotHeight = 0;
+        
         try {
           console.log('Adding screenshot to PDF...');
           
@@ -451,6 +456,12 @@
                 
                 // Center the image horizontally
                 const imgX = (pageWidth - imgWidth) / 2;
+                
+                // Store screenshot coordinates for link overlay
+                screenshotX = imgX;
+                screenshotY = yPos;
+                screenshotWidth = imgWidth;
+                screenshotHeight = imgHeight;
                 
                 // Add the image to PDF
                 pdf.addImage(data.screenshot, 'PNG', imgX, yPos, imgWidth, imgHeight);
@@ -483,6 +494,32 @@
           pdf.setFontSize(12);
           pdf.text('Screenshot processing failed', margin, yPos);
           yPos += 15;
+        }
+        
+        // Add clickable link overlays on screenshot
+        if (data.links && data.links.length > 0 && screenshotWidth > 0) {
+          console.log(`Adding ${data.links.length} clickable link overlays to PDF`);
+          
+          // Calculate scale factors between screenshot and viewport
+          const scaleX = screenshotWidth / window.innerWidth;
+          const scaleY = screenshotHeight / window.innerHeight;
+          
+          data.links.forEach(link => {
+            try {
+              // Convert viewport coordinates to PDF coordinates
+              const linkX = screenshotX + (link.x * scaleX);
+              const linkY = screenshotY + (link.y * scaleY);
+              const linkWidth = link.width * scaleX;
+              const linkHeight = link.height * scaleY;
+              
+              // Add invisible clickable area overlay
+              pdf.link(linkX, linkY, linkWidth, linkHeight, { url: link.href });
+              
+              console.log(`Added clickable overlay for: ${link.text} at (${linkX.toFixed(1)}, ${linkY.toFixed(1)})`);
+            } catch (error) {
+              console.error('Error adding link overlay:', error);
+            }
+          });
         }
         
         // User notes below screenshot
