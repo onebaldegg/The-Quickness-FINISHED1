@@ -296,10 +296,46 @@
         const pageHeight = 210;
         const margin = 15;
         
-        // Logo top-left (placeholder for now - will be replaced with actual logo)
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('THE QUICKNESS', margin, margin + 8);
+        // Logo top-left 
+        try {
+          // Try to load and add the logo
+          const logoImg = new Image();
+          logoImg.crossOrigin = 'anonymous';
+          
+          await new Promise((resolve, reject) => {
+            logoImg.onload = () => {
+              try {
+                // Small logo size
+                const logoWidth = 25;
+                const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+                pdf.addImage('https://github.com/onebaldegg/logo/raw/main/LOGO%202.png', 'PNG', margin, margin, logoWidth, logoHeight);
+                resolve();
+              } catch (error) {
+                console.error('Error adding logo to PDF:', error);
+                // Fallback: just text
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('THE QUICKNESS', margin, margin + 8);
+                resolve();
+              }
+            };
+            logoImg.onerror = (error) => {
+              console.error('Error loading logo:', error);
+              // Fallback: just text
+              pdf.setFontSize(12);
+              pdf.setFont(undefined, 'bold');
+              pdf.text('THE QUICKNESS', margin, margin + 8);
+              resolve();
+            };
+            logoImg.src = 'https://github.com/onebaldegg/logo/raw/main/LOGO%202.png';
+          });
+        } catch (error) {
+          console.error('Logo processing failed:', error);
+          // Fallback: just text
+          pdf.setFontSize(12);
+          pdf.setFont(undefined, 'bold');
+          pdf.text('THE QUICKNESS', margin, margin + 8);
+        }
         
         // Source URL top-right
         pdf.setFontSize(8);
