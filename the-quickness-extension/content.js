@@ -287,47 +287,12 @@
         const pageHeight = 210;
         const margin = 15;
         
-        // Logo top-left 
-        try {
-          // Try to load and add the actual logo
-          const logoImg = new Image();
-          logoImg.crossOrigin = 'anonymous';
-          
-          await new Promise((resolve, reject) => {
-            logoImg.onload = () => {
-              try {
-                // Small logo size
-                const logoWidth = 30;
-                const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-                pdf.addImage(logoImg, 'PNG', margin, margin, logoWidth, logoHeight);
-                console.log('Logo added to PDF successfully');
-                resolve();
-              } catch (error) {
-                console.error('Error adding logo to PDF:', error);
-                // Fallback: just text
-                pdf.setFontSize(12);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('THE QUICKNESS', margin, margin + 8);
-                resolve();
-              }
-            };
-            logoImg.onerror = (error) => {
-              console.error('Error loading logo:', error);
-              // Fallback: just text
-              pdf.setFontSize(12);
-              pdf.setFont(undefined, 'bold');
-              pdf.text('THE QUICKNESS', margin, margin + 8);
-              resolve();
-            };
-            logoImg.src = 'https://github.com/onebaldegg/logo/raw/main/LOGO%202.png';
-          });
-        } catch (error) {
-          console.error('Logo processing failed:', error);
-          // Fallback: just text
-          pdf.setFontSize(12);
-          pdf.setFont(undefined, 'bold');
-          pdf.text('THE QUICKNESS', margin, margin + 8);
-        }
+        // Logo top-left (CSS-based since external images are blocked by CORS)
+        pdf.setFontSize(14);
+        pdf.setFont(undefined, 'bold');
+        pdf.setTextColor(245, 158, 11); // Orange color similar to logo
+        pdf.text('THE QUICKNESS', margin, margin + 10);
+        pdf.setTextColor(0, 0, 0); // Reset to black
         
         // Source URL top-right
         pdf.setFontSize(8);
