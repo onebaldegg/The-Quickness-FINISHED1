@@ -75,86 +75,115 @@
       console.log('Taking viewport screenshot...');
 
       try {
-        // Take screenshot of visible viewport with improved settings
+        // Clean approach: Remove all cross-origin content before capture
         const canvas = await window.html2canvas(document.body, {
           height: window.innerHeight,
           width: window.innerWidth,
           x: 0,
           y: window.scrollY,
-          useCORS: false, // Disable CORS to avoid issues
-          allowTaint: true, // Allow tainted canvas
-          foreignObjectRendering: false, // Disable for better compatibility
+          useCORS: true,
+          allowTaint: false, // Must be false to allow export
+          foreignObjectRendering: false, // Disable to avoid tainted canvas
           scale: 1,
           logging: false,
           backgroundColor: '#ffffff',
           removeContainer: true,
           imageTimeout: 5000,
           ignoreElements: (element) => {
-            // Ignore our own modal and extension elements
+            // Ignore extension elements and problematic content
             return element.classList.contains('tq-modal-backdrop') || 
                    element.classList.contains('tq-note-modal') ||
                    element.classList.contains('tq-success-notification') ||
-                   element.classList.contains('tq-failure-notification');
+                   element.classList.contains('tq-failure-notification') ||
+                   element.tagName === 'IFRAME' ||
+                   element.tagName === 'VIDEO' ||
+                   element.tagName === 'EMBED' ||
+                   element.tagName === 'OBJECT';
+          },
+          onclone: (clonedDoc) => {
+            console.log('Cleaning cloned document for screenshot...');
+            
+            // Remove all cross-origin images to prevent tainted canvas
+            clonedDoc.querySelectorAll('img').forEach(img => {
+              if (img.src && !img.src.startsWith('data:') && !img.src.startsWith('blob:')) {
+                // Check if image is same-origin
+                try {
+                  const imgUrl = new URL(img.src);
+                  const currentUrl = new URL(window.location.href);
+                  
+                  if (imgUrl.origin !== currentUrl.origin) {
+                    // Cross-origin image - replace with placeholder
+                    const placeholder = clonedDoc.createElement('div');
+                    placeholder.style.width = img.style.width || img.offsetWidth + 'px';
+                    placeholder.style.height = img.style.height || img.offsetHeight + 'px';
+                    placeholder.style.backgroundColor = '#f3f4f6';
+                    placeholder.style.border = '1px solid #d1d5db';
+                    placeholder.style.display = 'flex';
+                    placeholder.style.alignItems = 'center';
+                    placeholder.style.justifyContent = 'center';
+                    placeholder.style.fontSize = '12px';
+                    placeholder.style.color = '#6b7280';
+                    placeholder.textContent = '[Image]';
+                    placeholder.style.borderRadius = getComputedStyle(img).borderRadius;
+                    
+                    if (img.parentNode) {
+                      img.parentNode.replaceChild(placeholder, img);
+                    }
+                  }
+                } catch (e) {
+                  // If URL parsing fails, remove the image
+                  if (img.parentNode) {
+                    img.parentNode.removeChild(img);
+                  }
+                }
+              }
+            });
+            
+            // Remove problematic scripts and iframes
+            clonedDoc.querySelectorAll('script, iframe, embed, object').forEach(el => {
+              el.remove();
+            });
+            
+            // Remove any elements with background images from other origins
+            clonedDoc.querySelectorAll('*').forEach(el => {
+              const bgImage = getComputedStyle(el).backgroundImage;
+              if (bgImage && bgImage !== 'none' && bgImage.includes('url(')) {
+                try {
+                  const urlMatch = bgImage.match(/url\(['"]?([^'"]+)['"]?\)/);
+                  if (urlMatch) {
+                    const bgUrl = new URL(urlMatch[1], window.location.href);
+                    const currentUrl = new URL(window.location.href);
+                    
+                    if (bgUrl.origin !== currentUrl.origin) {
+                      el.style.backgroundImage = 'none';
+                      el.style.backgroundColor = '#f3f4f6';
+                    }
+                  }
+                } catch (e) {
+                  el.style.backgroundImage = 'none';
+                }
+              }
+            });
           }
         });
 
-        // Convert to blob first, then to data URL for better handling
-        canvas.toBlob((blob) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            const screenshotDataUrl = reader.result;
-            console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
+        // Convert to data URL
+        const screenshotDataUrl = canvas.toDataURL('image/png', 0.9);
+        console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
 
-            this.capturedData = {
-              type: 'viewport_screenshot',
-              url: window.location.href,
-              title: document.title,
-              screenshot: screenshotDataUrl
-            };
+        this.capturedData = {
+          type: 'viewport_screenshot',
+          url: window.location.href,
+          title: document.title,
+          screenshot: screenshotDataUrl
+        };
 
-            console.log('Screenshot data stored, showing note modal');
-            this.showNoteModal();
-          };
-          reader.onerror = () => {
-            console.error('Failed to convert blob to data URL');
-            alert('Screenshot processing failed.');
-          };
-          reader.readAsDataURL(blob);
-        }, 'image/png', 0.9);
+        console.log('Screenshot data stored, showing note modal');
+        this.showNoteModal();
 
       } catch (error) {
         console.error('Screenshot failed:', error);
-        
-        // Fallback: try simpler approach
-        try {
-          console.log('Trying fallback screenshot method...');
-          const simpleCanvas = await window.html2canvas(document.body, {
-            height: window.innerHeight,
-            width: window.innerWidth,
-            x: 0,
-            y: window.scrollY,
-            useCORS: false,
-            allowTaint: true,
-            scale: 0.8,
-            logging: false
-          });
-          
-          const fallbackDataUrl = simpleCanvas.toDataURL('image/png', 0.8);
-          
-          this.capturedData = {
-            type: 'viewport_screenshot',
-            url: window.location.href,
-            title: document.title,
-            screenshot: fallbackDataUrl
-          };
-          
-          console.log('Fallback screenshot captured, showing note modal');
-          this.showNoteModal();
-          
-        } catch (fallbackError) {
-          console.error('Fallback screenshot also failed:', fallbackError);
-          alert('Screenshot capture failed. This may be due to website security restrictions.');
-        }
+        alert('Screenshot capture failed due to browser security restrictions. This can happen on websites with external content.');
       }
     }
 
