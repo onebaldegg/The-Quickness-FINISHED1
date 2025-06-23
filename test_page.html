@@ -355,6 +355,13 @@
             <li>Landscape PDF generation with specific layout</li>
             <li>Link preservation in screenshots</li>
         </ul>
+        
+        <!-- Test Button to simulate extension icon click -->
+        <div style="margin-top: 20px; text-align: center;">
+            <button id="simulate-extension-click" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">
+                Simulate Extension Icon Click
+            </button>
+        </div>
     </div>
     
     <div class="content-block">
@@ -366,5 +373,64 @@
             <li><a href="https://rawgit.com/MrRio/jsPDF/master/docs/index.html" target="_blank">jsPDF Documentation</a></li>
         </ul>
     </div>
+
+    <!-- Include the extension's content script -->
+    <script>
+        // Mock chrome API for testing
+        window.chrome = {
+            runtime: {
+                onMessage: {
+                    addListener: function(callback) {
+                        this.callback = callback;
+                    },
+                    callback: null
+                },
+                sendMessage: function(message, callback) {
+                    console.log('Sending message to background script:', message);
+                    if (callback) {
+                        callback({success: true});
+                    }
+                    return Promise.resolve({success: true});
+                },
+                lastError: null
+            },
+            tabs: {
+                sendMessage: function(tabId, message) {
+                    console.log('Sending message to tab:', tabId, message);
+                    return Promise.resolve({success: true});
+                }
+            },
+            downloads: {
+                download: function(options, callback) {
+                    console.log('Downloading file:', options);
+                    if (callback) {
+                        callback(1); // Mock download ID
+                    }
+                }
+            }
+        };
+        
+        // Wait for libraries to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Include the content script
+            const contentScript = document.createElement('script');
+            contentScript.src = '/app/the-quickness-extension/content.js';
+            document.body.appendChild(contentScript);
+            
+            // Add click handler for the test button
+            document.getElementById('simulate-extension-click').addEventListener('click', function() {
+                console.log('Simulating extension icon click');
+                // Wait a bit for the extension to initialize
+                setTimeout(function() {
+                    if (window.theQuicknessExtension) {
+                        console.log('Triggering takeScreenshot');
+                        window.theQuicknessExtension.takeScreenshot();
+                    } else {
+                        console.error('THE QUICKNESS extension not initialized');
+                    }
+                }, 1000);
+            });
+        });
+    </script>
 </body>
 </html>
