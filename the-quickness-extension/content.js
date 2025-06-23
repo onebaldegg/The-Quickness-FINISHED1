@@ -191,11 +191,15 @@
         const screenshotDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
 
+        // Extract visible links for PDF overlay
+        const links = this.extractViewportLinks();
+
         this.capturedData = {
           type: 'viewport_screenshot',
           url: window.location.href,
           title: document.title,
-          screenshot: screenshotDataUrl
+          screenshot: screenshotDataUrl,
+          links: links  // Add links back for PDF overlay
         };
 
         console.log('Screenshot data stored, showing note modal');
