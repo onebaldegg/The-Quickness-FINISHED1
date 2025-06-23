@@ -128,38 +128,6 @@
       }
     }
 
-    extractViewportLinks() {
-      const links = [];
-      const viewportHeight = window.innerHeight;
-      const scrollTop = window.scrollY;
-      
-      // Get all links that are visible in the current viewport
-      document.querySelectorAll('a[href]').forEach(link => {
-        const rect = link.getBoundingClientRect();
-        
-        // Check if link is visible in viewport
-        if (rect.top >= 0 && rect.top <= viewportHeight && 
-            rect.left >= 0 && rect.left <= window.innerWidth) {
-          
-          const linkData = {
-            text: link.textContent.trim(),
-            href: link.href,
-            x: Math.round(rect.left),
-            y: Math.round(rect.top),
-            width: Math.round(rect.width),
-            height: Math.round(rect.height)
-          };
-          
-          if (linkData.text && linkData.href) {
-            links.push(linkData);
-          }
-        }
-      });
-      
-      console.log(`Extracted ${links.length} links from viewport`);
-      return links;
-    }
-
     showNoteModal() {
       const backdrop = document.createElement('div');
       backdrop.className = 'tq-modal-backdrop';
