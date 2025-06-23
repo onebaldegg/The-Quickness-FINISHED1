@@ -189,8 +189,8 @@
         border: 3px solid #333;
       `;
       
-      // Logo as base64 (The Quickness logo)
-      const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='; // Placeholder - will be replaced with actual logo
+      // Logo from external source (The Quickness logo)
+      const logoBase64 = 'https://github.com/onebaldegg/logo/raw/main/LOGO%202.png';
       
       this.modal.innerHTML = `
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
