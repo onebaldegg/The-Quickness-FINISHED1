@@ -337,19 +337,20 @@
         pdf.setTextColor(0, 0, 0);
         
         // Screenshot below logo and URL
-        let yPos = margin + 20;
+        let yPos = margin + 25;
         try {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
+          console.log('Adding screenshot to PDF...');
+          const screenshotImg = new Image();
+          screenshotImg.crossOrigin = 'anonymous';
           
           await new Promise((resolve, reject) => {
-            img.onload = () => {
+            screenshotImg.onload = () => {
               try {
                 // Calculate screenshot dimensions to fit in available space
                 const availableWidth = pageWidth - (margin * 2);
                 const availableHeight = (pageHeight - yPos - margin - 40); // Leave space for notes
                 
-                const aspectRatio = img.width / img.height;
+                const aspectRatio = screenshotImg.width / screenshotImg.height;
                 let imgWidth = availableWidth;
                 let imgHeight = imgWidth / aspectRatio;
                 
@@ -361,19 +362,26 @@
                 // Center the image horizontally
                 const imgX = (pageWidth - imgWidth) / 2;
                 
-                pdf.addImage(data.screenshot, 'PNG', imgX, yPos, imgWidth, imgHeight);
+                pdf.addImage(screenshotImg, 'PNG', imgX, yPos, imgWidth, imgHeight);
                 yPos += imgHeight + 10;
+                console.log('Screenshot added to PDF successfully');
                 resolve();
               } catch (error) {
-                console.error('Error adding image to PDF:', error);
+                console.error('Error adding screenshot to PDF:', error);
+                pdf.setFontSize(12);
+                pdf.text('Screenshot could not be processed', margin, yPos);
+                yPos += 15;
                 reject(error);
               }
             };
-            img.onerror = (error) => {
-              console.error('Error loading image:', error);
+            screenshotImg.onerror = (error) => {
+              console.error('Error loading screenshot image:', error);
+              pdf.setFontSize(12);
+              pdf.text('Screenshot could not be loaded', margin, yPos);
+              yPos += 15;
               reject(error);
             };
-            img.src = data.screenshot;
+            screenshotImg.src = data.screenshot;
           });
         } catch (error) {
           console.error('Screenshot processing failed:', error);
