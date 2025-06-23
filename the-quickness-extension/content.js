@@ -287,7 +287,7 @@
         
         // Logo top-left 
         try {
-          // Try to load and add the logo
+          // Try to load and add the actual logo
           const logoImg = new Image();
           logoImg.crossOrigin = 'anonymous';
           
@@ -295,9 +295,10 @@
             logoImg.onload = () => {
               try {
                 // Small logo size
-                const logoWidth = 25;
+                const logoWidth = 30;
                 const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-                pdf.addImage('https://github.com/onebaldegg/logo/raw/main/LOGO%202.png', 'PNG', margin, margin, logoWidth, logoHeight);
+                pdf.addImage(logoImg, 'PNG', margin, margin, logoWidth, logoHeight);
+                console.log('Logo added to PDF successfully');
                 resolve();
               } catch (error) {
                 console.error('Error adding logo to PDF:', error);
