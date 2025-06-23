@@ -403,36 +403,6 @@
           yPos += noteLines.length * 4;
         }
         
-        // Add extracted links if any
-        if (data.links && data.links.length > 0) {
-          // Add new page if needed
-          if (yPos > pageHeight - 40) {
-            pdf.addPage();
-            yPos = margin;
-          }
-          
-          yPos += 10;
-          pdf.setFont(undefined, 'bold');
-          pdf.text('Links found in screenshot:', margin, yPos);
-          yPos += 8;
-          
-          pdf.setFont(undefined, 'normal');
-          pdf.setFontSize(8);
-          data.links.forEach(link => {
-            if (yPos > pageHeight - 20) {
-              pdf.addPage();
-              yPos = margin;
-            }
-            
-            pdf.setTextColor(0, 0, 255);
-            const linkText = `• ${link.text} (${link.href})`;
-            const linkLines = pdf.splitTextToSize(linkText, pageWidth - (margin * 2));
-            pdf.text(linkLines, margin, yPos);
-            yPos += linkLines.length * 4 + 2;
-          });
-          pdf.setTextColor(0, 0, 0);
-        }
-        
         console.log('PDF generation complete, starting download');
         
         // Use background script for download
