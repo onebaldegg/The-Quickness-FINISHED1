@@ -416,13 +416,14 @@
         downloadLink.download = filename;
         downloadLink.style.display = 'none';
         
+        // Ensure no auto-opening by not setting target
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
         
         setTimeout(() => URL.revokeObjectURL(url), 100);
         
-        console.log('Fallback download triggered to Downloads folder');
+        console.log('Fallback download triggered to Downloads folder (no auto-open)');
         this.showSuccessNotification(`PDF saved: ${filename}`);
         
       } catch (error) {
