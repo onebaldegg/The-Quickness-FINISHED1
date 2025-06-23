@@ -75,20 +75,26 @@
       console.log('Taking viewport screenshot...');
 
       try {
+        // Wait for fonts to load for better quality
+        if (document.fonts) {
+          await document.fonts.ready;
+        }
+
         // Clean approach: Remove all cross-origin content before capture
         const canvas = await window.html2canvas(document.body, {
           height: window.innerHeight,
           width: window.innerWidth,
           x: 0,
           y: window.scrollY,
+          scale: window.devicePixelRatio || 1, // High DPI for better quality
           useCORS: true,
           allowTaint: false, // Must be false to allow export
           foreignObjectRendering: false, // Disable to avoid tainted canvas
-          scale: 1,
           logging: false,
           backgroundColor: '#ffffff',
           removeContainer: true,
           imageTimeout: 5000,
+          letterRendering: true, // Better text rendering
           ignoreElements: (element) => {
             // Ignore extension elements and problematic content
             return element.classList.contains('tq-modal-backdrop') || 
@@ -103,6 +109,12 @@
           onclone: (clonedDoc) => {
             console.log('Cleaning cloned document for screenshot...');
             
+            // Ensure fonts are loaded in cloned document
+            if (clonedDoc.fonts) {
+              clonedDoc.fonts.load('400 16px Arial');
+              clonedDoc.fonts.load('700 16px Arial');
+            }
+            
             // Remove all cross-origin images to prevent tainted canvas
             clonedDoc.querySelectorAll('img').forEach(img => {
               if (img.src && !img.src.startsWith('data:') && !img.src.startsWith('blob:')) {
@@ -112,19 +124,23 @@
                   const currentUrl = new URL(window.location.href);
                   
                   if (imgUrl.origin !== currentUrl.origin) {
-                    // Cross-origin image - replace with placeholder
+                    // Cross-origin image - replace with styled placeholder
                     const placeholder = clonedDoc.createElement('div');
                     placeholder.style.width = img.style.width || img.offsetWidth + 'px';
                     placeholder.style.height = img.style.height || img.offsetHeight + 'px';
-                    placeholder.style.backgroundColor = '#f3f4f6';
-                    placeholder.style.border = '1px solid #d1d5db';
+                    placeholder.style.backgroundColor = '#f8f9fa';
+                    placeholder.style.border = '2px dashed #dee2e6';
                     placeholder.style.display = 'flex';
                     placeholder.style.alignItems = 'center';
                     placeholder.style.justifyContent = 'center';
                     placeholder.style.fontSize = '12px';
-                    placeholder.style.color = '#6b7280';
-                    placeholder.textContent = '[Image]';
+                    placeholder.style.color = '#6c757d';
+                    placeholder.style.fontFamily = 'Arial, sans-serif';
+                    placeholder.style.fontWeight = '500';
+                    placeholder.textContent = '🖼️ External Image';
                     placeholder.style.borderRadius = getComputedStyle(img).borderRadius;
+                    placeholder.style.minWidth = '60px';
+                    placeholder.style.minHeight = '40px';
                     
                     if (img.parentNode) {
                       img.parentNode.replaceChild(placeholder, img);
@@ -156,7 +172,7 @@
                     
                     if (bgUrl.origin !== currentUrl.origin) {
                       el.style.backgroundImage = 'none';
-                      el.style.backgroundColor = '#f3f4f6';
+                      el.style.backgroundColor = '#f8f9fa';
                     }
                   }
                 } catch (e) {
@@ -164,11 +180,15 @@
                 }
               }
             });
+            
+            // Optimize text rendering
+            clonedDoc.body.style.webkitFontSmoothing = 'antialiased';
+            clonedDoc.body.style.mozOsxFontSmoothing = 'grayscale';
           }
         });
 
-        // Convert to data URL
-        const screenshotDataUrl = canvas.toDataURL('image/png', 0.9);
+        // Convert to high-quality data URL
+        const screenshotDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log('Screenshot captured successfully, data URL length:', screenshotDataUrl.length);
 
         this.capturedData = {
