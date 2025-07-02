@@ -479,12 +479,28 @@
         const pageHeight = 210;
         const margin = 15;
         
-        // Logo top-left (CSS-based since external images are blocked by CORS)
-        pdf.setFontSize(14);
-        pdf.setFont(undefined, 'bold');
-        pdf.setTextColor(245, 158, 11); // Orange color similar to logo
-        pdf.text('THE QUICKNESS', margin, margin + 10);
-        pdf.setTextColor(0, 0, 0); // Reset to black
+        // Logo top-left - Use actual logo image
+        try {
+          if (window.LOGO_BASE64) {
+            // Add the actual logo image
+            pdf.addImage(window.LOGO_BASE64, 'PNG', margin, margin, 30, 10);
+          } else {
+            // Fallback to text if logo not available
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.setTextColor(245, 158, 11); // Orange color similar to logo
+            pdf.text('THE QUICKNESS', margin, margin + 10);
+            pdf.setTextColor(0, 0, 0); // Reset to black
+          }
+        } catch (logoError) {
+          console.warn('Could not add logo image, using text fallback:', logoError);
+          // Fallback to text
+          pdf.setFontSize(14);
+          pdf.setFont(undefined, 'bold');
+          pdf.setTextColor(245, 158, 11);
+          pdf.text('THE QUICKNESS', margin, margin + 10);
+          pdf.setTextColor(0, 0, 0);
+        }
         
         // Source URL top-right
         pdf.setFontSize(8);
