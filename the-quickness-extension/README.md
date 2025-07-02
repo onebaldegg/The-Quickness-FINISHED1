@@ -1,15 +1,15 @@
 # THE QUICKNESS - Chrome Extension
 
-A powerful Chrome extension for quick capture of screenshots, images, text, and notes with local PDF saving capability.
+A powerful Chrome extension for quick capture of screenshots with notes and automatic bookmark saving.
 
 ## Features
 
-- **Screenshot Region Capture** (Ctrl+Shift+S): Click and drag to select any area of the page for screenshot
-- **Hover Capture** (Ctrl+Shift+C): Hover over images or text elements to capture them with preserved formatting
-- **Quick Notes** (Ctrl+Shift+N): Create quick text notes associated with the current page
-- **Local PDF Saving**: All captures are automatically saved as PDFs to your Downloads/THE QUICKNESS folder
-- **Preserved Links**: All captured content maintains clickable links in the generated PDFs
-- **Formatted Text**: Text captures preserve styling and formatting
+- **One-Click Screenshot**: Click the extension icon to instantly capture the visible viewport
+- **Note Modal**: Add personal notes with a purple-themed interface
+- **Local PDF Saving**: Automatically saves screenshots with notes as landscape PDFs
+- **Link Preservation**: Maintains clickable links from the original webpage in the PDF
+- **Automatic Bookmarking**: Saves the current page URL as a bookmark in "THE QUICKNESS" folder
+- **Formatted Layout**: PDFs include logo, source URL, screenshot, and notes in organized layout
 
 ## Installation
 
@@ -26,45 +26,30 @@ A powerful Chrome extension for quick capture of screenshots, images, text, and 
 
 ## Usage
 
-### Screenshot Region Capture
-1. Press `Ctrl+Shift+S` on any webpage
-2. Click and drag to select the area you want to capture
-3. Add a note in the popup that appears
-4. Click "Save PDF" to save the capture locally
-
-### Hover Capture
-1. Press `Ctrl+Shift+C` on any webpage
-2. Hover over images or text elements you want to capture
-3. Click on the highlighted element to capture it
-4. Add a note in the popup that appears
-5. Click "Save PDF" to save the capture locally
-
-### Quick Notes
-1. Press `Ctrl+Shift+N` on any webpage
-2. Type your note in the popup that appears
-3. Click "Save PDF" to save the note with the current page URL
+### Screenshot Capture
+1. Click the extension icon on any webpage
+2. The extension will automatically capture the visible viewport
+3. A purple-themed modal will appear with the screenshot preview
+4. Add your notes in the text area
+5. Click "Save PDF" to save both the PDF and create a bookmark
 
 ## File Organization
 
-All captures are saved as PDFs in your browser's Downloads folder under a "THE QUICKNESS" subfolder. Files are named using the format:
-`YYYY-MM-DDTHH-MM-SS_first-two-words-of-note.pdf`
+All captures are saved as PDFs in your browser's Downloads folder. Bookmarks are saved in "THE QUICKNESS" folder on your Bookmarks Bar.
+
+**Naming Format**: `MMDDYY HHMM first-three-words-of-note.pdf`
+
+**Example**: A screenshot on May 12, 2025 at 2:23pm with note "Shark bites man in the ocean" saves as:
+- **PDF**: `051225 1423 Shark bites man.pdf`
+- **Bookmark**: `051225 1423 Shark bites man`
 
 ## PDF Layout
 
 Each PDF contains:
-1. **Header**: "THE QUICKNESS Capture"
-2. **Source URL**: Clickable link to the original webpage
-3. **Captured Content**: Screenshot, image, or formatted text
-4. **Links Section**: Any clickable links found in captured text
-5. **Notes**: Your personal notes
-
-## Keyboard Shortcuts
-
-- `Ctrl+Alt+Q` - Screenshot region selection
-- `Ctrl+Alt+W` - Hover capture mode
-- `Ctrl+Alt+E` - Quick note
-- `Escape` - Cancel current operation
-- `Ctrl+Enter` - Save (when in note input)
+1. **Header**: "THE QUICKNESS" logo (top-left)
+2. **Source URL**: Clickable link to the original webpage (top-right)
+3. **Screenshot**: Full viewport capture with preserved clickable links
+4. **Notes**: Your personal notes below the screenshot
 
 ## Permissions
 
@@ -74,6 +59,7 @@ This extension requires the following permissions:
 - **downloads**: To save PDFs to your local Downloads folder
 - **storage**: To store extension settings
 - **tabs**: To access tab information for URLs and titles
+- **bookmarks**: To create and organize bookmarks automatically
 - **host_permissions**: To work on all websites
 
 ## Technical Details
