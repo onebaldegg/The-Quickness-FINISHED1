@@ -333,7 +333,7 @@
       
       // Create logo using the actual logo image
       const logoHtml = `
-        <img src="${LOGO_BASE64}" alt="THE QUICKNESS" style="height: 42px; width: auto; border-radius: 6px;">
+        <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 42px; width: auto; border-radius: 6px;">
       `;
       
       this.modal.innerHTML = `
