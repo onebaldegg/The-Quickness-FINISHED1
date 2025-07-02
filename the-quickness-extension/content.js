@@ -656,6 +656,9 @@
         // Close modal
         this.closeModal();
         
+        // Create Chrome bookmark after successful PDF save
+        this.createBookmark(filename, note, data.url);
+        
       } catch (error) {
         console.error('PDF generation failed:', error);
         alert('PDF generation failed: ' + error.message);
