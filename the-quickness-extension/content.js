@@ -444,20 +444,29 @@
         const data = this.capturedData;
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         
-        // Create filename with timestamp and first two words of note
+        // Create filename with timestamp and first three words of note
         let noteWords = '';
         if (note && note.trim()) {
           noteWords = note.trim()
             .split(/\s+/)
-            .slice(0, 2)
-            .join('-')
-            .replace(/[^a-zA-Z0-9-]/g, '')
-            .toLowerCase();
+            .slice(0, 3)  // Changed from 2 to 3 words
+            .join(' ')
+            .replace(/[^a-zA-Z0-9\s]/g, '')
+            .trim();
         }
         
+        // Format: MMDDYY HHMM + first 3 words
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const year = String(now.getFullYear()).slice(-2);
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const timePrefix = `${month}${day}${year} ${hours}${minutes}`;
+        
         const filename = noteWords 
-          ? `${timestamp}_${noteWords}.pdf`
-          : `${timestamp}_screenshot.pdf`;
+          ? `${timePrefix} ${noteWords}.pdf`
+          : `${timePrefix} screenshot.pdf`;
         
         console.log('Creating landscape PDF with filename:', filename);
         
