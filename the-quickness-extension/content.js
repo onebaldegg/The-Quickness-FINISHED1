@@ -665,6 +665,74 @@
       }
     }
 
+    async createBookmark(filename, note, url) {
+      try {
+        console.log('Creating bookmark for:', url);
+        
+        // Get or create "THE QUICKNESS" folder in Bookmarks Bar
+        const bookmarkBarId = '1'; // Standard Chrome Bookmarks Bar ID
+        let quicknessFolder = null;
+        
+        // Search for existing "THE QUICKNESS" folder
+        const bookmarkTree = await new Promise((resolve, reject) => {
+          chrome.bookmarks.getChildren(bookmarkBarId, (results) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve(results);
+            }
+          });
+        });
+        
+        // Look for existing folder
+        quicknessFolder = bookmarkTree.find(item => 
+          item.title === 'THE QUICKNESS' && !item.url
+        );
+        
+        // Create folder if it doesn't exist
+        if (!quicknessFolder) {
+          console.log('Creating THE QUICKNESS bookmark folder');
+          quicknessFolder = await new Promise((resolve, reject) => {
+            chrome.bookmarks.create({
+              parentId: bookmarkBarId,
+              title: 'THE QUICKNESS'
+            }, (result) => {
+              if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+              } else {
+                resolve(result);
+              }
+            });
+          });
+        }
+        
+        // Create bookmark title from filename (remove .pdf extension)
+        const bookmarkTitle = filename.replace('.pdf', '');
+        
+        // Create the bookmark
+        await new Promise((resolve, reject) => {
+          chrome.bookmarks.create({
+            parentId: quicknessFolder.id,
+            title: bookmarkTitle,
+            url: url
+          }, (result) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve(result);
+            }
+          });
+        });
+        
+        console.log('Bookmark created successfully:', bookmarkTitle);
+        this.showSuccessNotification(`Bookmark saved: ${bookmarkTitle}`);
+        
+      } catch (error) {
+        console.error('Failed to create bookmark:', error);
+        this.showFailureNotification('Failed to create bookmark');
+      }
+    }
+
     fallbackDownload(pdfBlob, filename) {
       console.log('Using fallback download method');
       try {
