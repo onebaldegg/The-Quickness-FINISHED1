@@ -65,9 +65,10 @@ This extension requires the following permissions:
 ## Technical Details
 
 - **Manifest Version**: 3 (Latest Chrome extension standard)
-- **Screenshot Technology**: HTML2Canvas for high-quality captures
-- **PDF Generation**: jsPDF for creating formatted PDFs
+- **Screenshot Technology**: HTML2Canvas for high-quality viewport capture
+- **PDF Generation**: jsPDF for creating formatted landscape PDFs
 - **File Saving**: Chrome Downloads API for local file management
+- **Bookmarking**: Chrome Bookmarks API for automatic bookmark creation
 
 ## Troubleshooting
 
@@ -77,7 +78,7 @@ This extension requires the following permissions:
 - Refresh the webpage and try again
 
 ### Captures Not Saving
-- Check your Downloads folder for a "THE QUICKNESS" subfolder
+- Check your Downloads folder for PDF files
 - Ensure Chrome has permission to download files
 - Check Chrome's download settings
 
@@ -86,10 +87,10 @@ This extension requires the following permissions:
 - Try refreshing the page and capturing again
 - Check browser console for any error messages
 
-### Keyboard Shortcuts Not Working
-- Ensure no other extension is using the same shortcuts
-- Try clicking on the webpage first to ensure it has focus
-- Check Chrome's keyboard shortcuts settings
+### Bookmarks Not Created
+- Ensure the extension has bookmarks permission
+- Check if "THE QUICKNESS" folder appears in your Bookmarks Bar
+- Verify you're not on a restricted page (chrome:// URLs)
 
 ## Privacy
 
@@ -97,18 +98,17 @@ THE QUICKNESS operates entirely locally:
 - No data is sent to external servers
 - All captures are saved locally on your computer
 - No personal information is collected or transmitted
-- URLs and content are only processed locally for PDF generation
+- URLs and content are only processed locally for PDF generation and bookmarking
 
 ## Version History
 
 ### v1.0
-- Initial release
-- Screenshot region capture
-- Hover capture for images and text
-- Quick notes functionality
-- Local PDF saving
-- Keyboard shortcuts
-- Formatted PDF output with clickable links
+- Initial release with icon-click screenshot functionality
+- Purple-themed note modal with logo display
+- Landscape PDF generation with organized layout
+- Link preservation in screenshots and PDFs
+- Automatic Chrome bookmark creation
+- Local file saving with structured naming
 
 ## Support
 
