@@ -481,11 +481,21 @@
         
         // Logo top-left - Use actual logo image
         try {
-          if (window.LOGO_BASE64) {
-            // Add the actual logo image
-            pdf.addImage(window.LOGO_BASE64, 'PNG', margin, margin, 30, 10);
+          if (window.loadLogoAsBase64) {
+            // Load the actual logo image as base64
+            const logoBase64 = await window.loadLogoAsBase64();
+            if (logoBase64) {
+              pdf.addImage(logoBase64, 'PNG', margin, margin, 30, 10);
+            } else {
+              // Fallback to text if logo loading failed
+              pdf.setFontSize(14);
+              pdf.setFont(undefined, 'bold');
+              pdf.setTextColor(245, 158, 11); // Orange color similar to logo
+              pdf.text('THE QUICKNESS', margin, margin + 10);
+              pdf.setTextColor(0, 0, 0); // Reset to black
+            }
           } else {
-            // Fallback to text if logo not available
+            // Fallback to text if logo function not available
             pdf.setFontSize(14);
             pdf.setFont(undefined, 'bold');
             pdf.setTextColor(245, 158, 11); // Orange color similar to logo
