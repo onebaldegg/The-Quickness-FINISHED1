@@ -551,8 +551,9 @@
               try {
                 console.log('Screenshot image loaded for PDF, dimensions:', screenshotImg.width, 'x', screenshotImg.height);
                 
-                // Calculate screenshot dimensions to fit in available space
-                const availableWidth = pageWidth - (margin * 2);
+                // Calculate screenshot dimensions with 0.5 inch (12.7mm) margins on sides
+                const sideMargin = 12.7; // 0.5 inch in mm
+                const availableWidth = pageWidth - (sideMargin * 2);
                 const availableHeight = (pageHeight - yPos - margin - 40); // Leave space for notes
                 
                 const aspectRatio = screenshotImg.width / screenshotImg.height;
@@ -564,8 +565,8 @@
                   imgWidth = imgHeight * aspectRatio;
                 }
                 
-                // Center the image horizontally
-                const imgX = (pageWidth - imgWidth) / 2;
+                // Position with 0.5 inch margin from left
+                const imgX = sideMargin;
                 
                 // Store screenshot coordinates for link overlay
                 screenshotX = imgX;
