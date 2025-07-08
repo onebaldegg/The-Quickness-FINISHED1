@@ -449,9 +449,10 @@
         if (note && note.trim()) {
           noteWords = note.trim()
             .split(/\s+/)
-            .slice(0, 5)  // Changed from 3 to 5 words
+            .slice(0, 5)  // First 5 words
             .join(' ')
-            .replace(/[^a-zA-Z0-9\s]/g, '')
+            .replace(/[^a-zA-Z0-9\s]/g, '')  // Remove special characters
+            .replace(/\s+/g, ' ')  // Normalize spaces
             .trim();
         }
         
@@ -464,9 +465,16 @@
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const timePrefix = `${month}${day}${year} ${hours}${minutes}`;
         
-        const filename = noteWords 
-          ? `${timePrefix} ${noteWords}.pdf`
-          : `${timePrefix} screenshot.pdf`;
+        // Ensure filename is valid and not empty
+        let filename;
+        if (noteWords && noteWords.length > 0) {
+          filename = `${timePrefix} ${noteWords}.pdf`;
+        } else {
+          filename = `${timePrefix} screenshot.pdf`;
+        }
+        
+        // Sanitize filename for cross-platform compatibility
+        filename = filename.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, ' ').trim();
         
         console.log('Creating landscape PDF with filename:', filename);
         
