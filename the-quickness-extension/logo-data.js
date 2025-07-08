@@ -1,5 +1,5 @@
-// Logo data using actual PNG file instead of base64
-const LOGO_URL = chrome.runtime.getURL('icons/icon128.png');
+// Logo data using imgur URL
+const LOGO_URL = 'https://i.imgur.com/uVeuvVC.png';
 
 // Function to convert image to base64
 async function loadLogoAsBase64() {
