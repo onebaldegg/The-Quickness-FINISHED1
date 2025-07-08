@@ -679,12 +679,30 @@
       try {
         console.log('Creating bookmark for:', url);
         
-        // Get or create "THE QUICKNESS" folder in Bookmarks Bar
-        const bookmarkBarId = '1'; // Standard Chrome Bookmarks Bar ID
+        // Get the bookmark tree to find the bookmarks bar
+        const bookmarkTree = await new Promise((resolve, reject) => {
+          chrome.bookmarks.getTree((results) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve(results);
+            }
+          });
+        });
+        
+        // Find the bookmarks bar (usually the first child of root)
+        const root = bookmarkTree[0];
+        const bookmarkBar = root.children.find(child => child.title === 'Bookmarks bar' || child.title === 'Bookmarks Bar');
+        
+        if (!bookmarkBar) {
+          throw new Error('Could not find bookmarks bar');
+        }
+        
+        const bookmarkBarId = bookmarkBar.id;
         let quicknessFolder = null;
         
         // Search for existing "THE QUICKNESS" folder
-        const bookmarkTree = await new Promise((resolve, reject) => {
+        const bookmarkBarChildren = await new Promise((resolve, reject) => {
           chrome.bookmarks.getChildren(bookmarkBarId, (results) => {
             if (chrome.runtime.lastError) {
               reject(chrome.runtime.lastError);
@@ -695,7 +713,7 @@
         });
         
         // Look for existing folder
-        quicknessFolder = bookmarkTree.find(item => 
+        quicknessFolder = bookmarkBarChildren.find(item => 
           item.title === 'THE QUICKNESS' && !item.url
         );
         
