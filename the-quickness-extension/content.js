@@ -444,18 +444,18 @@
         const data = this.capturedData;
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         
-        // Create filename with timestamp and first three words of note
+        // Create filename with timestamp and first five words of note
         let noteWords = '';
         if (note && note.trim()) {
           noteWords = note.trim()
             .split(/\s+/)
-            .slice(0, 3)  // Changed from 2 to 3 words
+            .slice(0, 5)  // Changed from 3 to 5 words
             .join(' ')
             .replace(/[^a-zA-Z0-9\s]/g, '')
             .trim();
         }
         
-        // Format: MMDDYY HHMM + first 3 words
+        // Format: MMDDYY HHMM + first 5 words
         const now = new Date();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
