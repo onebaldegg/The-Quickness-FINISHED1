@@ -447,13 +447,17 @@
         // Create filename with timestamp and first five words of note
         let noteWords = '';
         if (note && note.trim()) {
-          noteWords = note.trim()
-            .split(/\s+/)
+          const words = note.trim().split(/\s+/);
+          console.log('Total words in note:', words.length, 'Words:', words);
+          
+          noteWords = words
             .slice(0, 5)  // First 5 words
             .join(' ')
             .replace(/[^a-zA-Z0-9\s]/g, '')  // Remove special characters
             .replace(/\s+/g, ' ')  // Normalize spaces
             .trim();
+            
+          console.log('Using 5 words for filename:', noteWords);
         }
         
         // Format: MMDDYY HHMM + first 5 words
