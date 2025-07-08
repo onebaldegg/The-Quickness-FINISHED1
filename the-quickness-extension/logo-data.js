@@ -1,3 +1,22 @@
 // Logo data using actual PNG file instead of base64
-const LOGO_BASE64 = chrome.runtime.getURL('icons/icon128.png');
-window.LOGO_BASE64 = LOGO_BASE64;
+const LOGO_URL = chrome.runtime.getURL('icons/icon128.png');
+
+// Function to convert image to base64
+async function loadLogoAsBase64() {
+  try {
+    const response = await fetch(LOGO_URL);
+    const blob = await response.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.warn('Failed to load logo as base64:', error);
+    return null;
+  }
+}
+
+// Set up logo references
+window.LOGO_BASE64 = LOGO_URL; // For HTML usage
+window.loadLogoAsBase64 = loadLogoAsBase64; // For PDF usage
