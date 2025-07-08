@@ -688,32 +688,14 @@
       try {
         console.log('Creating bookmark for:', url);
         
-        // Get the bookmark tree to find the bookmarks bar
-        const bookmarkTree = await new Promise((resolve, reject) => {
-          chrome.bookmarks.getTree((results) => {
-            if (chrome.runtime.lastError) {
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve(results);
-            }
-          });
-        });
-        
-        // Find the bookmarks bar (usually the first child of root)
-        const root = bookmarkTree[0];
-        const bookmarkBar = root.children.find(child => child.title === 'Bookmarks bar' || child.title === 'Bookmarks Bar');
-        
-        if (!bookmarkBar) {
-          throw new Error('Could not find bookmarks bar');
-        }
-        
-        const bookmarkBarId = bookmarkBar.id;
-        let quicknessFolder = null;
+        // Use the standard bookmarks bar ID (ID '1' is the bookmarks bar in Chrome)
+        const bookmarkBarId = '1';
         
         // Search for existing "THE QUICKNESS" folder
         const bookmarkBarChildren = await new Promise((resolve, reject) => {
           chrome.bookmarks.getChildren(bookmarkBarId, (results) => {
             if (chrome.runtime.lastError) {
+              console.error('Error getting bookmark children:', chrome.runtime.lastError);
               reject(chrome.runtime.lastError);
             } else {
               resolve(results);
@@ -722,7 +704,7 @@
         });
         
         // Look for existing folder
-        quicknessFolder = bookmarkBarChildren.find(item => 
+        let quicknessFolder = bookmarkBarChildren.find(item => 
           item.title === 'THE QUICKNESS' && !item.url
         );
         
@@ -735,6 +717,7 @@
               title: 'THE QUICKNESS'
             }, (result) => {
               if (chrome.runtime.lastError) {
+                console.error('Error creating bookmark folder:', chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
               } else {
                 resolve(result);
