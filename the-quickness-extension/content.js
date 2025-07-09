@@ -325,7 +325,7 @@
       this.modal.className = 'tq-note-modal';
       this.modal.style.cssText = `
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: #b885d8; border-radius: 8px; padding: 17px; 
+        background: #BF77F6; border-radius: 8px; padding: 17px; 
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         z-index: 2147483647; min-width: 350px; max-width: 490px;
         border: 2px solid #333;
