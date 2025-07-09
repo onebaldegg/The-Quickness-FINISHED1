@@ -441,8 +441,8 @@
                 
                 // Calculate screenshot dimensions to maximize size while fitting on one page
                 const availableWidth = pageWidth - (margin * 2);
-                // Leave minimal space for notes (25mm should be enough for a few lines)
-                const availableHeight = (pageHeight - yPos - margin - 25);
+                // Leave less space for notes since limit is now 100 characters (15mm should be enough)
+                const availableHeight = (pageHeight - yPos - margin - 15);
                 
                 const aspectRatio = screenshotImg.width / screenshotImg.height;
                 let imgWidth = availableWidth;
