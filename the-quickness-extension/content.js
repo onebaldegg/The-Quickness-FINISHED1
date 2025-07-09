@@ -331,13 +331,15 @@
         border: 2px solid #333;
       `;
       
-      // Create logo using the actual logo image - make it larger with transparent background
+      // Create logo using the actual logo image - with proper background handling
       const logoHtml = `
-        <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px; background: transparent;">
+        <div style="background: transparent; padding: 5px; border-radius: 6px;">
+          <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px; display: block; mix-blend-mode: multiply;">
+        </div>
       `;
       
       this.modal.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; background: transparent;">
           ${logoHtml}
           <div style="display: flex; gap: 8px;">
             <button id="tq-cancel-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Cancel</button>
