@@ -5,11 +5,24 @@
 chrome.action.onClicked.addListener((tab) => {
   console.log('THE QUICKNESS icon clicked, triggering screenshot');
   
-  // Send message to content script to take screenshot
-  chrome.tabs.sendMessage(tab.id, {
-    action: 'takeScreenshot'
-  }).catch((error) => {
-    console.log('Content script not ready:', error);
+  // Capture the visible tab using Chrome's API for better image quality
+  chrome.tabs.captureVisibleTab(null, {
+    format: 'png',
+    quality: 100
+  }, (dataUrl) => {
+    if (chrome.runtime.lastError) {
+      console.error('Failed to capture tab:', chrome.runtime.lastError);
+      return;
+    }
+    
+    // Send the captured screenshot to content script
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'showNoteModal',
+      screenshot: dataUrl,
+      url: tab.url
+    }).catch((error) => {
+      console.log('Content script not ready:', error);
+    });
   });
 });
 
