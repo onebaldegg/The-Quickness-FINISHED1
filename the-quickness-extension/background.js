@@ -120,7 +120,18 @@ async function createBookmark(filename, note, url, tabId, tabTitle) {
       });
     }
     
-    // Check if bookmark already exists to avoid duplicates
+    // Create bookmark title from filename (remove .pdf extension and timestamp)
+    let bookmarkTitle = filename.replace('.pdf', '');
+    
+    // Remove timestamp prefix (MMDDYY HHMM format) if present
+    bookmarkTitle = bookmarkTitle.replace(/^\d{6}\s\d{4}\s/, '');
+    
+    // If title is empty after cleanup, use the tab title or URL
+    if (!bookmarkTitle.trim()) {
+      bookmarkTitle = tabTitle || url;
+    }
+    
+    // Check if bookmark with same URL AND title already exists to avoid duplicates
     const existingBookmarks = await new Promise((resolve, reject) => {
       chrome.bookmarks.search({ url: url }, (results) => {
         if (chrome.runtime.lastError) {
@@ -132,22 +143,15 @@ async function createBookmark(filename, note, url, tabId, tabTitle) {
       });
     });
     
-    // If bookmark already exists, don't create a duplicate
-    if (existingBookmarks.length > 0) {
-      console.log('Background: Bookmark already exists:', existingBookmarks[0].title);
-      notifyContentScriptBookmark(tabId, `Bookmark already exists: ${existingBookmarks[0].title}`, true);
+    // Check if a bookmark with the same URL and title already exists
+    const duplicateBookmark = existingBookmarks.find(bookmark => 
+      bookmark.url === url && bookmark.title === bookmarkTitle
+    );
+    
+    if (duplicateBookmark) {
+      console.log('Background: Bookmark with same URL and title already exists:', duplicateBookmark.title);
+      notifyContentScriptBookmark(tabId, `Bookmark already exists: ${duplicateBookmark.title}`, true);
       return;
-    }
-    
-    // Create bookmark title from filename (remove .pdf extension and timestamp)
-    let bookmarkTitle = filename.replace('.pdf', '');
-    
-    // Remove timestamp prefix (MMDDYY HHMM format) if present
-    bookmarkTitle = bookmarkTitle.replace(/^\d{6}\s\d{4}\s/, '');
-    
-    // If title is empty after cleanup, use the tab title or URL
-    if (!bookmarkTitle.trim()) {
-      bookmarkTitle = tabTitle || url;
     }
     
     // Create the bookmark in the "THE QUICKNESS" folder
