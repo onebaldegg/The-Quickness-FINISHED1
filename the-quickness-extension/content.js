@@ -39,7 +39,7 @@
             this.hideLoadingIndicator();
             this.showNoteModal();
           } else if (request.action === 'downloadSuccess') {
-            this.showSuccessNotification(`PDF saved to Downloads: ${request.filename}`);
+            this.showSuccessNotification(`PDF saved to Downloads/THE QUICKNESS: ${request.filename}`);
           } else if (request.action === 'downloadFailed') {
             this.showFailureNotification(`PDF save failed: ${request.filename}`);
           } else if (request.action === 'bookmarkSuccess') {
