@@ -238,7 +238,7 @@
           
           <div>
             <label style="display: block; font-weight: 500; margin-bottom: 4px; color: #333; font-size: 12px;">Your Note:</label>
-            <textarea id="tq-note-input" style="width: 100%; min-height: 70px; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px;" placeholder="Add your note here..." maxlength="300"></textarea>
+            <textarea id="tq-note-input" style="width: 100%; min-height: 70px; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px;" placeholder="Add your note here..." maxlength="100"></textarea>
           </div>
         </div>
       `;
