@@ -331,9 +331,9 @@
         border: 2px solid #333;
       `;
       
-      // Create logo using the actual logo image - make it larger
+      // Create logo using the actual logo image - make it larger with transparent background
       const logoHtml = `
-        <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px;">
+        <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px; background: transparent;">
       `;
       
       this.modal.innerHTML = `
