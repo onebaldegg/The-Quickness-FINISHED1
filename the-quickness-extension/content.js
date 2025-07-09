@@ -252,7 +252,7 @@
           border-radius: 50%;
           animation: tq-spin 1s linear infinite;
         "></div>
-        <span>Taking screenshot...</span>
+        <span>Capturing screenshot...</span>
       `;
       
       // Add CSS animation
