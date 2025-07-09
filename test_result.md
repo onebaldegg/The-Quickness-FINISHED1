@@ -223,7 +223,7 @@ backend:
         -agent: "testing"
         -comment: "Code review confirms that the manifest.json file does not include a default_popup property, which enables the icon click handling. The extension responds to clicks instead of showing a popup. The implementation meets all requirements."
         
-  - task: "PDF Layout Improvements"
+  - task: "Bookmark Creation with Chrome Bookmarks API"
     implemented: true
     working: true
     file: "/app/the-quickness-extension/content.js"
@@ -233,10 +233,10 @@ backend:
     status_history:
         -working: false
         -agent: "main"
-        -comment: "Implemented PDF layout improvements: 1) Increased logo size by 70% (from 50x20 to 85x34), 2) Reduced notes character limit from 300 to 100, 3) Optimized spacing to 30pt (≈11mm) between logo and screenshot, 4) Moved screenshot and notes down to accommodate larger logo, 5) Reduced URL width to 100mm to avoid overlap with larger logo, 6) Reduced notes space to 15mm since shorter limit."
+        -comment: "Fixed bookmark creation by replacing hardcoded bookmarks bar ID '1' with proper chrome.bookmarks.getTree() detection. Implemented proper bookmarks bar discovery by searching for 'Bookmarks bar' or 'Bookmarks Bar' in root children. Added fallback logic to find first folder without URL if title search fails. Added duplicate bookmark checking to prevent duplicates. Improved bookmark title generation (removes timestamps and .pdf extension). Enhanced error handling with user-friendly messages."
         -working: true
         -agent: "testing"
-        -comment: "Code review confirms all PDF layout improvements have been successfully implemented: 1) Logo size increased to 85x34 (line 377), 2) Notes character limit reduced to 100 characters (line 241), 3) Spacing set to 11mm/30pt between logo and screenshot (line 421), 4) Screenshot and notes moved down (line 421), 5) URL width reduced to 100mm (line 409), 6) Notes space reduced to 15mm (line 445). The implementation ensures a well-balanced layout with the larger logo while maintaining a professional appearance."
+        -comment: "Code review confirms that the bookmark creation functionality has been properly implemented. The code now correctly detects the bookmarks bar using chrome.bookmarks.getTree() instead of hardcoding ID '1' (lines 581-590). It searches for 'Bookmarks bar' or 'Bookmarks Bar' or 'Bookmarks Toolbar' in root children (lines 598-604). There's fallback logic to find the first folder without URL if title search fails (lines 607-613). Duplicate bookmark checking is implemented to prevent creating multiple bookmarks for the same URL (lines 658-674). Bookmark title generation removes timestamps and .pdf extension (lines 676-686). Error handling with user-friendly messages is in place (lines 706-709). The implementation follows Chrome extension best practices and should work as expected."
 
 metadata:
   created_by: "testing_agent"
