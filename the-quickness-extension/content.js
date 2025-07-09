@@ -580,6 +580,9 @@
     async createBookmark(filename, note, url) {
       try {
         console.log('Sending bookmark creation request to background script');
+        console.log('Filename being sent:', filename);
+        console.log('Note being sent:', note);
+        console.log('URL being sent:', url);
         
         // Send message to background script to create bookmark
         const response = await chrome.runtime.sendMessage({
