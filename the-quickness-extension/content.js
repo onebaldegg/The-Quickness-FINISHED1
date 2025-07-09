@@ -417,8 +417,8 @@
         }
         pdf.setTextColor(0, 0, 0);
         
-        // Move screenshot and notes further down to make room for larger logo
-        let yPos = margin + 35; // Increased from 20 to 35
+        // Move screenshot and notes further down with 30pt spacing after larger logo
+        let yPos = margin + 34 + 11; // Logo height (34) + 30pt spacing converted to mm (≈11mm)
         let screenshotX = 0;
         let screenshotY = 0;
         let screenshotWidth = 0;
