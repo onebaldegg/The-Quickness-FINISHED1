@@ -406,7 +406,7 @@
         pdf.setFont(undefined, 'normal');
         pdf.setTextColor(0, 0, 255);
         const urlText = data.url;
-        const maxUrlWidth = 120; // Leave space for logo
+        const maxUrlWidth = 100; // Reduced from 120 to leave space for larger logo
         const urlLines = pdf.splitTextToSize(urlText, maxUrlWidth);
         const urlStartY = margin + 5;
         const urlStartX = pageWidth - margin - maxUrlWidth;
