@@ -29,6 +29,15 @@
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           if (request.action === 'takeScreenshot') {
             this.takeScreenshot();
+          } else if (request.action === 'showNoteModal') {
+            // New approach: receive screenshot data directly from background script
+            this.capturedData = {
+              screenshot: request.screenshot,
+              url: request.url,
+              links: this.extractViewportLinks()
+            };
+            this.hideLoadingIndicator();
+            this.showNoteModal();
           } else if (request.action === 'downloadSuccess') {
             this.showSuccessNotification(`PDF saved to Downloads: ${request.filename}`);
           } else if (request.action === 'downloadFailed') {
