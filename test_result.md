@@ -208,6 +208,21 @@ backend:
         -agent: "testing"
         -comment: "Code review confirms that the background.js file includes a chrome.action.onClicked listener that sends a 'takeScreenshot' message to the content script when the extension icon is clicked. The implementation meets all requirements."
 
+  - task: "Manifest Updates for Icon Click"
+    implemented: true
+    working: true
+    file: "/app/the-quickness-extension/manifest.json"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: false
+        -agent: "main"
+        -comment: "Removed default_popup from manifest.json to enable icon click handling. Extension now responds to clicks instead of showing popup."
+        -working: true
+        -agent: "testing"
+        -comment: "Code review confirms that the manifest.json file does not include a default_popup property, which enables the icon click handling. The extension responds to clicks instead of showing a popup. The implementation meets all requirements."
+        
   - task: "PDF Layout Improvements"
     implemented: true
     working: true
