@@ -394,10 +394,10 @@
         } catch (logoError) {
           console.warn('Could not add logo image, using text fallback:', logoError);
           // Fallback to text
-          pdf.setFontSize(18);
+          pdf.setFontSize(24); // Increased from 18 to match larger logo
           pdf.setFont(undefined, 'bold');
           pdf.setTextColor(245, 158, 11);
-          pdf.text('THE QUICKNESS', margin, margin + 15);
+          pdf.text('THE QUICKNESS', margin, margin + 20); // Adjusted position
           pdf.setTextColor(0, 0, 0);
         }
         
