@@ -257,7 +257,7 @@ backend:
         -comment: "User reports bookmarking feature is failing with error: 'TypeError: Cannot read properties of undefined (reading 'getTree')' at content.js:582:28. The chrome.bookmarks API is not available to content scripts, only to background scripts and popup scripts. Need to move bookmarking logic to background script."
         -working: true
         -agent: "main"
-        -comment: "DUPLICATE DETECTION FIX: User reported that bookmarks were showing 'already exists' message with old filename instead of creating new bookmarks with different notes. The issue was that duplicate detection was only checking by URL, not by URL + title combination. Fixed by modifying the duplicate detection logic to check both URL and title, allowing multiple bookmarks of the same page with different notes (different titles from the PDF filename). This allows users to create multiple bookmarks for the same page with different screenshot notes."
+        -comment: "BOOKMARK TITLE FIX: User reported that bookmark titles were missing the timestamp prefix (e.g., bookmark showed 'i sure hope this works' instead of '070925 1410 i sure hope this works'). The issue was that the background script was removing the timestamp prefix from bookmark titles. Fixed by removing the timestamp removal logic so bookmark titles now match PDF filenames exactly (minus .pdf extension). Bookmark titles now include the full timestamp prefix to match the saved PDF filename."
 
 metadata:
   created_by: "testing_agent"
