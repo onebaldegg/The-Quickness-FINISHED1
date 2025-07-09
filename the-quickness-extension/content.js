@@ -377,10 +377,10 @@
               pdf.addImage(logoBase64, 'PNG', margin, margin, 85, 34); // 70% bigger (was 50x20)
             } else {
               // Fallback to text if logo loading failed
-              pdf.setFontSize(18);
+              pdf.setFontSize(24); // Increased from 18 to match larger logo
               pdf.setFont(undefined, 'bold');
               pdf.setTextColor(245, 158, 11); // Orange color similar to logo
-              pdf.text('THE QUICKNESS', margin, margin + 15);
+              pdf.text('THE QUICKNESS', margin, margin + 20); // Adjusted position
               pdf.setTextColor(0, 0, 0); // Reset to black
             }
           } else {
