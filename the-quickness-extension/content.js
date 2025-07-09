@@ -385,10 +385,10 @@
             }
           } else {
             // Fallback to text if logo function not available
-            pdf.setFontSize(18);
+            pdf.setFontSize(24); // Increased from 18 to match larger logo
             pdf.setFont(undefined, 'bold');
             pdf.setTextColor(245, 158, 11); // Orange color similar to logo
-            pdf.text('THE QUICKNESS', margin, margin + 15);
+            pdf.text('THE QUICKNESS', margin, margin + 20); // Adjusted position
             pdf.setTextColor(0, 0, 0); // Reset to black
           }
         } catch (logoError) {
