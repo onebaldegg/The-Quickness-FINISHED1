@@ -490,50 +490,57 @@
         const pageHeight = 210;
         const margin = 15;
         
-        // Logo top-left - Use actual logo image
+        // Logo top-left - Make it larger
         try {
           if (window.loadLogoAsBase64) {
             // Load the actual logo image as base64
             const logoBase64 = await window.loadLogoAsBase64();
             if (logoBase64) {
-              pdf.addImage(logoBase64, 'PNG', margin, margin, 30, 10);
+              pdf.addImage(logoBase64, 'PNG', margin, margin, 50, 20); // Increased size
             } else {
               // Fallback to text if logo loading failed
-              pdf.setFontSize(14);
+              pdf.setFontSize(18);
               pdf.setFont(undefined, 'bold');
               pdf.setTextColor(245, 158, 11); // Orange color similar to logo
-              pdf.text('THE QUICKNESS', margin, margin + 10);
+              pdf.text('THE QUICKNESS', margin, margin + 15);
               pdf.setTextColor(0, 0, 0); // Reset to black
             }
           } else {
             // Fallback to text if logo function not available
-            pdf.setFontSize(14);
+            pdf.setFontSize(18);
             pdf.setFont(undefined, 'bold');
             pdf.setTextColor(245, 158, 11); // Orange color similar to logo
-            pdf.text('THE QUICKNESS', margin, margin + 10);
+            pdf.text('THE QUICKNESS', margin, margin + 15);
             pdf.setTextColor(0, 0, 0); // Reset to black
           }
         } catch (logoError) {
           console.warn('Could not add logo image, using text fallback:', logoError);
           // Fallback to text
-          pdf.setFontSize(14);
+          pdf.setFontSize(18);
           pdf.setFont(undefined, 'bold');
           pdf.setTextColor(245, 158, 11);
-          pdf.text('THE QUICKNESS', margin, margin + 10);
+          pdf.text('THE QUICKNESS', margin, margin + 15);
           pdf.setTextColor(0, 0, 0);
         }
         
-        // Source URL top-right
-        pdf.setFontSize(8);
+        // Source URL top-right with proper wrapping
+        pdf.setFontSize(10);
         pdf.setFont(undefined, 'normal');
         pdf.setTextColor(0, 0, 255);
-        const urlText = `Source: ${data.url}`;
-        const urlWidth = pdf.getTextWidth(urlText);
-        pdf.textWithLink(urlText, pageWidth - margin - urlWidth, margin + 8, { url: data.url });
+        const urlText = data.url;
+        const maxUrlWidth = 120; // Leave space for logo
+        const urlLines = pdf.splitTextToSize(urlText, maxUrlWidth);
+        const urlStartY = margin + 5;
+        const urlStartX = pageWidth - margin - maxUrlWidth;
+        
+        // Draw URL lines
+        for (let i = 0; i < urlLines.length; i++) {
+          pdf.textWithLink(urlLines[i], urlStartX, urlStartY + (i * 4), { url: data.url });
+        }
         pdf.setTextColor(0, 0, 0);
         
-        // Screenshot below logo and URL
-        let yPos = margin + 20;
+        // Move screenshot and notes further down to make room for larger logo
+        let yPos = margin + 35; // Increased from 20 to 35
         let screenshotX = 0;
         let screenshotY = 0;
         let screenshotWidth = 0;
