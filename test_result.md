@@ -268,6 +268,7 @@ test_plan:
     - "Background Script Icon Click Handler"
     - "Manifest Updates for Icon Click"
     - "PDF Layout Improvements"
+    - "Bookmark Creation with Chrome Bookmarks API"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
