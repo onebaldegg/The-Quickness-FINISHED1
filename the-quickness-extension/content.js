@@ -76,37 +76,26 @@
     }
 
     async takeScreenshot() {
-      if (!this.librariesLoaded) {
-        console.error('Libraries not loaded yet');
-        return;
-      }
-
-      console.log('Taking viewport screenshot...');
+      // Fallback method - now primarily handled by background script
+      console.log('Taking viewport screenshot using fallback method...');
       
       // Show loading indicator
       this.showLoadingIndicator();
-
-      try {
-        // Wait for fonts to load for better quality
-        if (document.fonts) {
-          await document.fonts.ready;
-        }
-
-        // Clean approach: Remove all cross-origin content before capture
-        const canvas = await window.html2canvas(document.body, {
-          height: window.innerHeight,
-          width: window.innerWidth,
-          x: 0,
-          y: window.scrollY,
-          scale: window.devicePixelRatio || 1, // High DPI for better quality
-          useCORS: true,
-          allowTaint: false, // Must be false to allow export
-          foreignObjectRendering: false, // Disable to avoid tainted canvas
-          logging: false,
-          backgroundColor: '#ffffff',
-          removeContainer: true,
-          imageTimeout: 5000,
-          letterRendering: true, // Better text rendering
+      
+      // Extract links before screenshot
+      const links = this.extractViewportLinks();
+      
+      // For fallback, use current URL
+      this.capturedData = {
+        screenshot: null,
+        url: window.location.href,
+        links: links
+      };
+      
+      // Hide loading and show modal (screenshot will be handled by background)
+      this.hideLoadingIndicator();
+      this.showNoteModal();
+    }
           ignoreElements: (element) => {
             // Ignore extension elements and problematic content
             return element.classList.contains('tq-modal-backdrop') || 
