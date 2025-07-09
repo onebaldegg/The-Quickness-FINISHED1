@@ -237,6 +237,7 @@ test_plan:
     - "Link Preservation in Screenshots"
     - "Background Script Icon Click Handler"
     - "Manifest Updates for Icon Click"
+    - "PDF Layout Improvements"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
