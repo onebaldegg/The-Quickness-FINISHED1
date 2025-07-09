@@ -331,10 +331,10 @@
         border: 2px solid #333;
       `;
       
-      // Create logo using the actual logo image - with proper background handling
+      // Create logo using the actual logo image - with white background to neutralize logo's purple
       const logoHtml = `
-        <div style="background: transparent; padding: 5px; border-radius: 6px;">
-          <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px; display: block; mix-blend-mode: multiply;">
+        <div style="background: white; padding: 5px; border-radius: 6px; display: inline-block;">
+          <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px; display: block;">
         </div>
       `;
       
