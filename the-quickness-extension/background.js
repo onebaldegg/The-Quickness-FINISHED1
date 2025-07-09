@@ -123,13 +123,12 @@ async function createBookmark(filename, note, url, tabId, tabTitle) {
       });
     }
     
-    // Create bookmark title from filename (remove .pdf extension and timestamp)
+    // Create bookmark title from filename (remove .pdf extension only)
     let bookmarkTitle = filename.replace('.pdf', '');
     console.log('Background: After removing .pdf extension:', bookmarkTitle);
     
-    // Remove timestamp prefix (MMDDYY HHMM format) if present
-    bookmarkTitle = bookmarkTitle.replace(/^\d{6}\s\d{4}\s/, '');
-    console.log('Background: After removing timestamp:', bookmarkTitle);
+    // Keep the timestamp prefix to match PDF filename exactly
+    // Do NOT remove timestamp - user wants bookmark title to match PDF filename
     
     // If title is empty after cleanup, use the tab title or URL
     if (!bookmarkTitle.trim()) {
