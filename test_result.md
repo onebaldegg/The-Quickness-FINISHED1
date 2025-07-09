@@ -208,20 +208,20 @@ backend:
         -agent: "testing"
         -comment: "Code review confirms that the background.js file includes a chrome.action.onClicked listener that sends a 'takeScreenshot' message to the content script when the extension icon is clicked. The implementation meets all requirements."
 
-  - task: "Manifest Updates for Icon Click"
+  - task: "PDF Layout Improvements"
     implemented: true
     working: true
-    file: "/app/the-quickness-extension/manifest.json"
+    file: "/app/the-quickness-extension/content.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         -working: false
         -agent: "main"
-        -comment: "Removed default_popup from manifest.json to enable icon click handling. Extension now responds to clicks instead of showing popup."
+        -comment: "Implemented PDF layout improvements: 1) Increased logo size by 70% (from 50x20 to 85x34), 2) Reduced notes character limit from 300 to 100, 3) Optimized spacing to 30pt (≈11mm) between logo and screenshot, 4) Moved screenshot and notes down to accommodate larger logo, 5) Reduced URL width to 100mm to avoid overlap with larger logo, 6) Reduced notes space to 15mm since shorter limit."
         -working: true
         -agent: "testing"
-        -comment: "Code review confirms that the manifest.json file does not include a default_popup property, which enables the icon click handling. The extension responds to clicks instead of showing a popup. The implementation meets all requirements."
+        -comment: "Code review confirms all PDF layout improvements have been successfully implemented: 1) Logo size increased to 85x34 (line 377), 2) Notes character limit reduced to 100 characters (line 241), 3) Spacing set to 11mm/30pt between logo and screenshot (line 421), 4) Screenshot and notes moved down (line 421), 5) URL width reduced to 100mm (line 409), 6) Notes space reduced to 15mm (line 445). The implementation ensures a well-balanced layout with the larger logo while maintaining a professional appearance."
 
 metadata:
   created_by: "testing_agent"
