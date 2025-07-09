@@ -32,14 +32,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     downloadPDFToDownloads(request.pdfData, request.filename, sender.tab.id);
     sendResponse({success: true});
   } else if (request.action === 'createBookmark') {
-    createBookmark(request.filename, request.note, request.url, sender.tab.id);
+    createBookmark(request.filename, request.note, request.url, sender.tab.id, sender.tab.title);
     sendResponse({success: true});
   }
   return true;
 });
 
 // Bookmark creation function (moved from content script)
-async function createBookmark(filename, note, url, tabId) {
+async function createBookmark(filename, note, url, tabId, tabTitle) {
   try {
     console.log('Background: Creating bookmark for:', url);
     
@@ -145,9 +145,9 @@ async function createBookmark(filename, note, url, tabId) {
     // Remove timestamp prefix (MMDDYY HHMM format) if present
     bookmarkTitle = bookmarkTitle.replace(/^\d{6}\s\d{4}\s/, '');
     
-    // If title is empty after cleanup, use the page title or URL
+    // If title is empty after cleanup, use the tab title or URL
     if (!bookmarkTitle.trim()) {
-      bookmarkTitle = url; // We don't have access to document.title from background
+      bookmarkTitle = tabTitle || url;
     }
     
     // Create the bookmark in the "THE QUICKNESS" folder
