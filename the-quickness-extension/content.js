@@ -374,7 +374,7 @@
             // Load the actual logo image as base64
             const logoBase64 = await window.loadLogoAsBase64();
             if (logoBase64) {
-              pdf.addImage(logoBase64, 'PNG', margin, margin, 50, 20); // Increased size
+              pdf.addImage(logoBase64, 'PNG', margin, margin, 85, 34); // 70% bigger (was 50x20)
             } else {
               // Fallback to text if logo loading failed
               pdf.setFontSize(18);
