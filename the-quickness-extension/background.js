@@ -217,12 +217,15 @@ function downloadPDFToDownloads(pdfDataArray, filename, tabId) {
     const base64 = btoa(binary);
     const dataUrl = `data:application/pdf;base64,${base64}`;
     
-    console.log('Background: Saving PDF to Downloads folder:', filename);
+    console.log('Background: Saving PDF to THE QUICKNESS folder:', filename);
     
-    // Save directly to Downloads folder (Chrome's default) - no auto-open
+    // Save to THE QUICKNESS subfolder in Downloads folder
+    // Chrome will automatically create the subfolder if it doesn't exist
+    const subfolderPath = `THE QUICKNESS/${filename}`;
+    
     chrome.downloads.download({
       url: dataUrl,
-      filename: filename,
+      filename: subfolderPath, // Save to Downloads/THE QUICKNESS/filename.pdf
       saveAs: false,
       conflictAction: 'uniquify'
     }, (downloadId) => {
@@ -230,11 +233,11 @@ function downloadPDFToDownloads(pdfDataArray, filename, tabId) {
         console.error('Background: Download failed:', chrome.runtime.lastError);
         notifyContentScript(tabId, filename, false);
       } else {
-        console.log('Background: PDF saved successfully to Downloads:', downloadId);
+        console.log('Background: PDF saved successfully to THE QUICKNESS folder:', downloadId);
         notifyContentScript(tabId, filename, true);
         
         // Do not auto-open the PDF - just save it
-        console.log('Background: PDF saved without auto-opening');
+        console.log('Background: PDF saved to Downloads/THE QUICKNESS/ without auto-opening');
       }
     });
     
