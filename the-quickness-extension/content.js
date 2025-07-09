@@ -575,136 +575,20 @@
 
     async createBookmark(filename, note, url) {
       try {
-        console.log('Creating bookmark for:', url);
+        console.log('Sending bookmark creation request to background script');
         
-        // Get the bookmarks tree to find the correct bookmarks bar ID
-        const bookmarkTree = await new Promise((resolve, reject) => {
-          chrome.bookmarks.getTree((results) => {
-            if (chrome.runtime.lastError) {
-              console.error('Error getting bookmark tree:', chrome.runtime.lastError);
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve(results);
-            }
-          });
+        // Send message to background script to create bookmark
+        const response = await chrome.runtime.sendMessage({
+          action: 'createBookmark',
+          filename: filename,
+          note: note,
+          url: url
         });
         
-        // Find the bookmarks bar - it's one of the top-level folders
-        // The root node is at index 0, and its children are the top-level folders
-        const rootNode = bookmarkTree[0];
-        let bookmarksBarId = null;
-        
-        // Look for the bookmarks bar among the root's children
-        // It's typically titled "Bookmarks bar" or "Bookmarks Bar"
-        for (const child of rootNode.children) {
-          if (child.title === 'Bookmarks bar' || child.title === 'Bookmarks Bar' || child.title === 'Bookmarks Toolbar') {
-            bookmarksBarId = child.id;
-            break;
-          }
-        }
-        
-        // Fallback: if not found by title, use the first folder without a URL (which should be the bookmarks bar)
-        if (!bookmarksBarId && rootNode.children.length > 0) {
-          for (const child of rootNode.children) {
-            if (!child.url) { // Folders don't have URLs
-              bookmarksBarId = child.id;
-              break;
-            }
-          }
-        }
-        
-        if (!bookmarksBarId) {
-          throw new Error('Could not find bookmarks bar');
-        }
-        
-        console.log('Found bookmarks bar ID:', bookmarksBarId);
-        
-        // Search for existing "THE QUICKNESS" folder in the bookmarks bar
-        const bookmarkBarChildren = await new Promise((resolve, reject) => {
-          chrome.bookmarks.getChildren(bookmarksBarId, (results) => {
-            if (chrome.runtime.lastError) {
-              console.error('Error getting bookmark bar children:', chrome.runtime.lastError);
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve(results);
-            }
-          });
-        });
-        
-        // Look for existing "THE QUICKNESS" folder
-        let quicknessFolder = bookmarkBarChildren.find(item => 
-          item.title === 'THE QUICKNESS' && !item.url
-        );
-        
-        // Create "THE QUICKNESS" folder if it doesn't exist
-        if (!quicknessFolder) {
-          console.log('Creating THE QUICKNESS bookmark folder');
-          quicknessFolder = await new Promise((resolve, reject) => {
-            chrome.bookmarks.create({
-              parentId: bookmarksBarId,
-              title: 'THE QUICKNESS'
-            }, (result) => {
-              if (chrome.runtime.lastError) {
-                console.error('Error creating bookmark folder:', chrome.runtime.lastError);
-                reject(chrome.runtime.lastError);
-              } else {
-                resolve(result);
-              }
-            });
-          });
-        }
-        
-        // Check if bookmark already exists to avoid duplicates
-        const existingBookmarks = await new Promise((resolve, reject) => {
-          chrome.bookmarks.search({ url: url }, (results) => {
-            if (chrome.runtime.lastError) {
-              console.error('Error searching for existing bookmark:', chrome.runtime.lastError);
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve(results);
-            }
-          });
-        });
-        
-        // If bookmark already exists, don't create a duplicate
-        if (existingBookmarks.length > 0) {
-          console.log('Bookmark already exists:', existingBookmarks[0].title);
-          this.showSuccessNotification(`Bookmark already exists: ${existingBookmarks[0].title}`);
-          return;
-        }
-        
-        // Create bookmark title from filename (remove .pdf extension and timestamp)
-        let bookmarkTitle = filename.replace('.pdf', '');
-        
-        // Remove timestamp prefix (MMDDYY HHMM format) if present
-        bookmarkTitle = bookmarkTitle.replace(/^\d{6}\s\d{4}\s/, '');
-        
-        // If title is empty after cleanup, use the page title or URL
-        if (!bookmarkTitle.trim()) {
-          bookmarkTitle = document.title || url;
-        }
-        
-        // Create the bookmark in the "THE QUICKNESS" folder
-        const newBookmark = await new Promise((resolve, reject) => {
-          chrome.bookmarks.create({
-            parentId: quicknessFolder.id,
-            title: bookmarkTitle,
-            url: url
-          }, (result) => {
-            if (chrome.runtime.lastError) {
-              console.error('Error creating bookmark:', chrome.runtime.lastError);
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve(result);
-            }
-          });
-        });
-        
-        console.log('Bookmark created successfully:', newBookmark);
-        this.showSuccessNotification(`Bookmark saved: ${bookmarkTitle}`);
+        console.log('Bookmark creation request sent successfully');
         
       } catch (error) {
-        console.error('Failed to create bookmark:', error);
+        console.error('Failed to send bookmark creation request:', error);
         this.showFailureNotification(`Failed to create bookmark: ${error.message}`);
       }
     }
