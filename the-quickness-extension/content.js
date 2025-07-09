@@ -561,10 +561,9 @@
               try {
                 console.log('Screenshot image loaded for PDF, dimensions:', screenshotImg.width, 'x', screenshotImg.height);
                 
-                // Calculate screenshot dimensions with 0.5 inch (12.7mm) margins on sides
-                const sideMargin = 12.7; // 0.5 inch in mm
-                const availableWidth = pageWidth - (sideMargin * 2);
-                const availableHeight = (pageHeight - yPos - margin - 40); // Leave space for notes
+                // Calculate screenshot dimensions to fill from left margin to right margin
+                const availableWidth = pageWidth - (margin * 2); // Use same margin as other elements
+                const availableHeight = (pageHeight - yPos - margin - 50); // Leave more space for notes
                 
                 const aspectRatio = screenshotImg.width / screenshotImg.height;
                 let imgWidth = availableWidth;
@@ -575,8 +574,8 @@
                   imgWidth = imgHeight * aspectRatio;
                 }
                 
-                // Position with 0.5 inch margin from left
-                const imgX = sideMargin;
+                // Position at left margin to fill width
+                const imgX = margin;
                 
                 // Store screenshot coordinates for link overlay
                 screenshotX = imgX;
