@@ -42,6 +42,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function createBookmark(filename, note, url, tabId, tabTitle) {
   try {
     console.log('Background: Creating bookmark for:', url);
+    console.log('Background: Received filename:', filename);
+    console.log('Background: Received note:', note);
+    console.log('Background: Tab title:', tabTitle);
     
     // Get the bookmarks tree to find the correct bookmarks bar ID
     const bookmarkTree = await new Promise((resolve, reject) => {
