@@ -42,6 +42,10 @@
             this.showSuccessNotification(`PDF saved to Downloads: ${request.filename}`);
           } else if (request.action === 'downloadFailed') {
             this.showFailureNotification(`PDF save failed: ${request.filename}`);
+          } else if (request.action === 'bookmarkSuccess') {
+            this.showSuccessNotification(request.message);
+          } else if (request.action === 'bookmarkFailed') {
+            this.showFailureNotification(request.message);
           }
         });
       } catch (error) {
