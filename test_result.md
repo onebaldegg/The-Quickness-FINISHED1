@@ -111,7 +111,10 @@ Change 2: Auto-save PDF in landscape mode with specific layout: Logo top-left, s
 RECENT UPDATES:
 Change 1: Replace logo with new JPG file and change background to light purple #BF77F6 - COMPLETED
 Change 2: Move Cancel and Save PDF buttons to header, make logo larger, move screenshot down - COMPLETED  
-Change 3: PDF layout improvements - larger logo, 300 char limit on notes, proper layout - COMPLETED"
+Change 3: PDF layout improvements - larger logo, 300 char limit on notes, proper layout - COMPLETED
+Change 4: Fixed logo background layering issue in popup - COMPLETED
+Change 5: PDF screenshot optimization - maximized size, centered positioning - COMPLETED
+Change 6: MAJOR IMPROVEMENT - Replaced html2canvas with chrome.tabs.captureVisibleTab for better image capture including all images and external content - COMPLETED"
 
 frontend:
   - task: "Icon Click Screenshot Functionality"
