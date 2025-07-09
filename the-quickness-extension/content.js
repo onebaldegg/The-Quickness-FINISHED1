@@ -331,14 +331,18 @@
         border: 2px solid #333;
       `;
       
-      // Create logo using the actual logo image
+      // Create logo using the actual logo image - make it larger
       const logoHtml = `
-        <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 42px; width: auto; border-radius: 6px;">
+        <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px;">
       `;
       
       this.modal.innerHTML = `
-        <div style="display: flex; align-items: center; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
           ${logoHtml}
+          <div style="display: flex; gap: 8px;">
+            <button id="tq-cancel-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Cancel</button>
+            <button id="tq-save-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #007cff; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Save PDF</button>
+          </div>
         </div>
         
         <div style="background: white; border-radius: 6px; padding: 11px; margin-bottom: 11px;">
@@ -358,11 +362,6 @@
             <label style="display: block; font-weight: 500; margin-bottom: 4px; color: #333; font-size: 12px;">Your Note:</label>
             <textarea id="tq-note-input" style="width: 100%; min-height: 70px; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px;" placeholder="Add your note here..."></textarea>
           </div>
-        </div>
-        
-        <div style="display: flex; gap: 8px; justify-content: flex-end;">
-          <button id="tq-cancel-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Cancel</button>
-          <button id="tq-save-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #007cff; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Save PDF</button>
         </div>
       `;
       
