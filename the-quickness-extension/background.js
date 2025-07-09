@@ -125,14 +125,19 @@ async function createBookmark(filename, note, url, tabId, tabTitle) {
     
     // Create bookmark title from filename (remove .pdf extension and timestamp)
     let bookmarkTitle = filename.replace('.pdf', '');
+    console.log('Background: After removing .pdf extension:', bookmarkTitle);
     
     // Remove timestamp prefix (MMDDYY HHMM format) if present
     bookmarkTitle = bookmarkTitle.replace(/^\d{6}\s\d{4}\s/, '');
+    console.log('Background: After removing timestamp:', bookmarkTitle);
     
     // If title is empty after cleanup, use the tab title or URL
     if (!bookmarkTitle.trim()) {
       bookmarkTitle = tabTitle || url;
+      console.log('Background: Using fallback title:', bookmarkTitle);
     }
+    
+    console.log('Background: Final bookmark title will be:', bookmarkTitle);
     
     // Check if bookmark with same URL AND title already exists to avoid duplicates
     const existingBookmarks = await new Promise((resolve, reject) => {
@@ -145,6 +150,8 @@ async function createBookmark(filename, note, url, tabId, tabTitle) {
         }
       });
     });
+    
+    console.log('Background: Found existing bookmarks for this URL:', existingBookmarks.map(b => b.title));
     
     // Check if a bookmark with the same URL and title already exists
     const duplicateBookmark = existingBookmarks.find(bookmark => 
