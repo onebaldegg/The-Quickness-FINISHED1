@@ -106,7 +106,12 @@ user_problem_statement: "Major changes to THE QUICKNESS Chrome extension:
 
 Change 1: Remove popup menu completely. When extension icon is clicked, immediately take screenshot of visible viewport and show note modal with THE QUICKNESS logo, source URL, screenshot, and user notes. Use purple background from logo.
 
-Change 2: Auto-save PDF in landscape mode with specific layout: Logo top-left, source URL top-right, screenshot below spanning across, user notes below screenshot. Must preserve links from screenshots."
+Change 2: Auto-save PDF in landscape mode with specific layout: Logo top-left, source URL top-right, screenshot below spanning across, user notes below screenshot. Must preserve links from screenshots.
+
+RECENT UPDATES:
+Change 1: Replace logo with new JPG file and change background to light purple #BF77F6 - COMPLETED
+Change 2: Move Cancel and Save PDF buttons to header, make logo larger, move screenshot down - COMPLETED  
+Change 3: PDF layout improvements - larger logo, 300 char limit on notes, proper layout - COMPLETED"
 
 frontend:
   - task: "Icon Click Screenshot Functionality"
