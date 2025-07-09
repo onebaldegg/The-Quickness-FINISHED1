@@ -563,21 +563,23 @@
               try {
                 console.log('Screenshot image loaded for PDF, dimensions:', screenshotImg.width, 'x', screenshotImg.height);
                 
-                // Calculate screenshot dimensions to fill from left margin to right margin
-                const availableWidth = pageWidth - (margin * 2); // Use same margin as other elements
-                const availableHeight = (pageHeight - yPos - margin - 50); // Leave more space for notes
+                // Calculate screenshot dimensions to maximize size while fitting on one page
+                const availableWidth = pageWidth - (margin * 2);
+                // Leave minimal space for notes (25mm should be enough for a few lines)
+                const availableHeight = (pageHeight - yPos - margin - 25);
                 
                 const aspectRatio = screenshotImg.width / screenshotImg.height;
                 let imgWidth = availableWidth;
                 let imgHeight = imgWidth / aspectRatio;
                 
+                // If height is too much, scale down proportionally
                 if (imgHeight > availableHeight) {
                   imgHeight = availableHeight;
                   imgWidth = imgHeight * aspectRatio;
                 }
                 
-                // Position at left margin to fill width
-                const imgX = margin;
+                // Center the screenshot horizontally on the page
+                const imgX = (pageWidth - imgWidth) / 2;
                 
                 // Store screenshot coordinates for link overlay
                 screenshotX = imgX;
