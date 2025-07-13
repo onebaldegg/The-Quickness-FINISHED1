@@ -13,6 +13,7 @@
       this.capturedData = null;
       this.modal = null;
       this.librariesLoaded = false;
+      this.timers = []; // Track timers for cleanup
       
       this.init();
     }
