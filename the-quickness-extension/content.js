@@ -826,11 +826,11 @@
       }
     }
 
-    // Cleanup method to clear all timers and prevent memory leaks
+    // Cleanup method to clear critical timers and prevent memory leaks
     cleanup() {
-      // Clear all tracked timers
-      this.timers.forEach(timer => clearTimeout(timer));
-      this.timers = [];
+      // Clear only critical tracked timers
+      this.criticalTimers.forEach(timer => clearTimeout(timer));
+      this.criticalTimers = [];
       
       // Close modal if open
       this.closeModal();
