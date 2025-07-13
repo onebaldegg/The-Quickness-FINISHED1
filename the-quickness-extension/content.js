@@ -216,41 +216,104 @@
         border: 2px solid #333;
       `;
       
-      // Create logo using the actual logo image - NO white background frame
-      const logoHtml = `
-        <div style="display: inline-block;">
-          <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 69px; width: auto; border-radius: 6px; display: block;">
-        </div>
-      `;
+      // Create modal content safely without innerHTML to prevent XSS
+      const header = document.createElement('div');
+      header.style.cssText = 'display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; background: transparent;';
       
-      this.modal.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; background: transparent;">
-          ${logoHtml}
-          <div style="display: flex; gap: 9px;">
-            <button id="tq-cancel-btn" style="padding: 9px 20px; border: none; border-radius: 5px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 14px;">Cancel</button>
-            <button id="tq-save-btn" style="padding: 9px 20px; border: none; border-radius: 5px; background: #007cff; color: white; cursor: pointer; font-weight: 500; font-size: 14px;">Save PDF</button>
-          </div>
-        </div>
-        
-        <div style="background: white; border-radius: 7px; padding: 13px; margin-bottom: 13px;">
-          <div style="font-size: 12px; color: #666; word-break: break-all; margin-bottom: 9px;">
-            <strong>Source:</strong> ${this.capturedData.url}
-          </div>
-          
-          <div style="margin-bottom: 13px;">
-            <div style="font-weight: 500; margin-bottom: 7px; color: #333; font-size: 14px;">Screenshot Preview:</div>
-            <div id="screenshot-container" style="min-height: 161px; border: 1px solid #ddd; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
-              <img id="screenshot-img" style="max-width: 100%; max-height: 161px; border-radius: 5px; display: none;" />
-              <div id="screenshot-loading" style="color: #666; font-size: 14px;">Loading screenshot...</div>
-            </div>
-          </div>
-          
-          <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 5px; color: #333; font-size: 14px;">Your Note:</label>
-            <textarea id="tq-note-input" style="width: 100%; min-height: 81px; padding: 9px; border: 2px solid #e0e0e0; border-radius: 5px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px;" placeholder="Add your note here..." maxlength="100"></textarea>
-          </div>
-        </div>
-      `;
+      // Create logo container
+      const logoContainer = document.createElement('div');
+      logoContainer.style.cssText = 'display: inline-block;';
+      
+      const logoImg = document.createElement('img');
+      logoImg.src = window.LOGO_BASE64 || '';
+      logoImg.alt = 'THE QUICKNESS';
+      logoImg.style.cssText = 'height: 69px; width: auto; border-radius: 6px; display: block;';
+      logoContainer.appendChild(logoImg);
+      
+      // Create button container
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.cssText = 'display: flex; gap: 9px;';
+      
+      const cancelBtn = document.createElement('button');
+      cancelBtn.id = 'tq-cancel-btn';
+      cancelBtn.style.cssText = 'padding: 9px 20px; border: none; border-radius: 5px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 14px;';
+      cancelBtn.textContent = 'Cancel';
+      
+      const saveBtn = document.createElement('button');
+      saveBtn.id = 'tq-save-btn';
+      saveBtn.style.cssText = 'padding: 9px 20px; border: none; border-radius: 5px; background: #007cff; color: white; cursor: pointer; font-weight: 500; font-size: 14px;';
+      saveBtn.textContent = 'Save PDF';
+      
+      buttonContainer.appendChild(cancelBtn);
+      buttonContainer.appendChild(saveBtn);
+      
+      header.appendChild(logoContainer);
+      header.appendChild(buttonContainer);
+      
+      // Create content container
+      const contentContainer = document.createElement('div');
+      contentContainer.style.cssText = 'background: white; border-radius: 7px; padding: 13px; margin-bottom: 13px;';
+      
+      // Create source URL section
+      const sourceDiv = document.createElement('div');
+      sourceDiv.style.cssText = 'font-size: 12px; color: #666; word-break: break-all; margin-bottom: 9px;';
+      
+      const sourceLabel = document.createElement('strong');
+      sourceLabel.textContent = 'Source: ';
+      sourceDiv.appendChild(sourceLabel);
+      sourceDiv.appendChild(document.createTextNode(this.capturedData.url));
+      
+      // Create screenshot section
+      const screenshotSection = document.createElement('div');
+      screenshotSection.style.cssText = 'margin-bottom: 13px;';
+      
+      const screenshotTitle = document.createElement('div');
+      screenshotTitle.style.cssText = 'font-weight: 500; margin-bottom: 7px; color: #333; font-size: 14px;';
+      screenshotTitle.textContent = 'Screenshot Preview:';
+      
+      const screenshotContainer = document.createElement('div');
+      screenshotContainer.id = 'screenshot-container';
+      screenshotContainer.style.cssText = 'min-height: 161px; border: 1px solid #ddd; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;';
+      
+      const screenshotImg = document.createElement('img');
+      screenshotImg.id = 'screenshot-img';
+      screenshotImg.style.cssText = 'max-width: 100%; max-height: 161px; border-radius: 5px; display: none;';
+      
+      const screenshotLoading = document.createElement('div');
+      screenshotLoading.id = 'screenshot-loading';
+      screenshotLoading.style.cssText = 'color: #666; font-size: 14px;';
+      screenshotLoading.textContent = 'Loading screenshot...';
+      
+      screenshotContainer.appendChild(screenshotImg);
+      screenshotContainer.appendChild(screenshotLoading);
+      
+      screenshotSection.appendChild(screenshotTitle);
+      screenshotSection.appendChild(screenshotContainer);
+      
+      // Create notes section
+      const notesSection = document.createElement('div');
+      
+      const notesLabel = document.createElement('label');
+      notesLabel.style.cssText = 'display: block; font-weight: 500; margin-bottom: 5px; color: #333; font-size: 14px;';
+      notesLabel.textContent = 'Your Note:';
+      
+      const notesTextarea = document.createElement('textarea');
+      notesTextarea.id = 'tq-note-input';
+      notesTextarea.style.cssText = 'width: 100%; min-height: 81px; padding: 9px; border: 2px solid #e0e0e0; border-radius: 5px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; font-size: 14px;';
+      notesTextarea.placeholder = 'Add your note here...';
+      notesTextarea.maxLength = 100;
+      
+      notesSection.appendChild(notesLabel);
+      notesSection.appendChild(notesTextarea);
+      
+      // Assemble content container
+      contentContainer.appendChild(sourceDiv);
+      contentContainer.appendChild(screenshotSection);
+      contentContainer.appendChild(notesSection);
+      
+      // Assemble modal
+      this.modal.appendChild(header);
+      this.modal.appendChild(contentContainer);
       
       document.body.appendChild(backdrop);
       document.body.appendChild(this.modal);
