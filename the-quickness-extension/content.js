@@ -261,7 +261,9 @@
       const sourceLabel = document.createElement('strong');
       sourceLabel.textContent = 'Source: ';
       sourceDiv.appendChild(sourceLabel);
-      sourceDiv.appendChild(document.createTextNode(this.capturedData.url));
+      // Source URL with proper encoding for security
+      const encodedUrl = encodeURI(this.capturedData.url);
+      sourceDiv.appendChild(document.createTextNode(encodedUrl));
       
       // Create screenshot section
       const screenshotSection = document.createElement('div');
