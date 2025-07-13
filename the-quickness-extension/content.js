@@ -219,30 +219,30 @@
       `;
       
       this.modal.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; background: transparent;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; background: transparent;">
           ${logoHtml}
-          <div style="display: flex; gap: 8px;">
-            <button id="tq-cancel-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Cancel</button>
-            <button id="tq-save-btn" style="padding: 8px 17px; border: none; border-radius: 4px; background: #007cff; color: white; cursor: pointer; font-weight: 500; font-size: 12px;">Save PDF</button>
+          <div style="display: flex; gap: 9px;">
+            <button id="tq-cancel-btn" style="padding: 9px 20px; border: none; border-radius: 5px; background: #6c757d; color: white; cursor: pointer; font-weight: 500; font-size: 14px;">Cancel</button>
+            <button id="tq-save-btn" style="padding: 9px 20px; border: none; border-radius: 5px; background: #007cff; color: white; cursor: pointer; font-weight: 500; font-size: 14px;">Save PDF</button>
           </div>
         </div>
         
-        <div style="background: white; border-radius: 6px; padding: 11px; margin-bottom: 11px;">
-          <div style="font-size: 10px; color: #666; word-break: break-all; margin-bottom: 8px;">
+        <div style="background: white; border-radius: 7px; padding: 13px; margin-bottom: 13px;">
+          <div style="font-size: 12px; color: #666; word-break: break-all; margin-bottom: 9px;">
             <strong>Source:</strong> ${this.capturedData.url}
           </div>
           
-          <div style="margin-bottom: 11px;">
-            <div style="font-weight: 500; margin-bottom: 6px; color: #333; font-size: 12px;">Screenshot Preview:</div>
-            <div id="screenshot-container" style="min-height: 140px; border: 1px solid #ddd; border-radius: 4px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
-              <img id="screenshot-img" style="max-width: 100%; max-height: 140px; border-radius: 4px; display: none;" />
-              <div id="screenshot-loading" style="color: #666; font-size: 12px;">Loading screenshot...</div>
+          <div style="margin-bottom: 13px;">
+            <div style="font-weight: 500; margin-bottom: 7px; color: #333; font-size: 14px;">Screenshot Preview:</div>
+            <div id="screenshot-container" style="min-height: 161px; border: 1px solid #ddd; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+              <img id="screenshot-img" style="max-width: 100%; max-height: 161px; border-radius: 5px; display: none;" />
+              <div id="screenshot-loading" style="color: #666; font-size: 14px;">Loading screenshot...</div>
             </div>
           </div>
           
           <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 4px; color: #333; font-size: 12px;">Your Note:</label>
-            <textarea id="tq-note-input" style="width: 100%; min-height: 70px; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px;" placeholder="Add your note here..." maxlength="100"></textarea>
+            <label style="display: block; font-weight: 500; margin-bottom: 5px; color: #333; font-size: 14px;">Your Note:</label>
+            <textarea id="tq-note-input" style="width: 100%; min-height: 81px; padding: 9px; border: 2px solid #e0e0e0; border-radius: 5px; resize: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px;" placeholder="Add your note here..." maxlength="100"></textarea>
           </div>
         </div>
       `;
