@@ -1,10 +1,10 @@
-// Logo data using new THE QUICKNESS logo with caching
+// Logo data using new THE QUICKNESS logo with lazy caching
 const LOGO_URL = 'https://i.imgur.com/kA9ixy8.png';
 
-// Cache for logo base64 data
+// Cache for logo base64 data - only load when needed
 let logoCache = null;
 
-// Function to convert image to base64 with caching
+// Function to convert image to base64 with caching (lazy loading)
 async function loadLogoAsBase64() {
   // Return cached version if available
   if (logoCache) {
@@ -13,7 +13,7 @@ async function loadLogoAsBase64() {
   }
   
   try {
-    console.log('Fetching logo from external URL...');
+    console.log('Loading logo for PDF generation...');
     const response = await fetch(LOGO_URL, {
       cache: 'force-cache', // Use browser cache when possible
     });
@@ -42,23 +42,8 @@ async function loadLogoAsBase64() {
   }
 }
 
-// Preload logo on script initialization
-async function preloadLogo() {
-  try {
-    await loadLogoAsBase64();
-    console.log('Logo preloaded successfully');
-  } catch (error) {
-    console.warn('Logo preload failed:', error);
-  }
-}
-
 // Set up logo references
 window.LOGO_BASE64 = LOGO_URL; // For HTML usage (fallback to URL)
 window.loadLogoAsBase64 = loadLogoAsBase64; // For PDF usage
 
-// Preload logo when script loads
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', preloadLogo);
-} else {
-  preloadLogo();
-}
+// NO automatic preloading - logo will be loaded only when needed for PDF generation
