@@ -804,10 +804,16 @@
 
     closeModal() {
       if (this.modal) {
+        // Clean up event listeners to prevent memory leaks
+        if (this.modalEventHandlers) {
+          document.removeEventListener('keydown', this.modalEventHandlers.keydown);
+        }
+        
         const backdrop = document.querySelector('.tq-modal-backdrop');
         if (backdrop) backdrop.remove();
         this.modal.remove();
         this.modal = null;
+        this.modalEventHandlers = null;
       }
     }
   }
