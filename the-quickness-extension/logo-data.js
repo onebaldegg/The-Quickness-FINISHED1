@@ -1,10 +1,13 @@
-// Logo data using new THE QUICKNESS logo with lazy caching
+// Logo data using fallback approach for reliability
 const LOGO_URL = 'https://i.imgur.com/kA9ixy8.png';
+
+// Fallback logo as base64 (simple orange text logo)
+const FALLBACK_LOGO_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRkY2QjM1O3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y1OUUwQjtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMzMzMzMzIiByeD0iOCIvPjx0ZXh0IHg9IjEwMCIgeT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9InVybCgjZ3JhZGllbnQpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5USEUgUVVJQ0tORVNTPC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iI0JGNzdGNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U2NyZWVuc2hvdCAmYW1wOyBQREYgVG9vbDwvdGV4dD48L3N2Zz4=';
 
 // Cache for logo base64 data - only load when needed
 let logoCache = null;
 
-// Function to convert image to base64 with caching (lazy loading)
+// Function to convert image to base64 with fallback (lazy loading)
 async function loadLogoAsBase64() {
   // Return cached version if available
   if (logoCache) {
@@ -31,19 +34,21 @@ async function loadLogoAsBase64() {
         resolve(reader.result);
       };
       reader.onerror = () => {
-        console.warn('Failed to convert logo to base64');
-        resolve(null);
+        console.warn('Failed to convert logo to base64, using fallback');
+        logoCache = FALLBACK_LOGO_BASE64;
+        resolve(FALLBACK_LOGO_BASE64);
       };
       reader.readAsDataURL(blob);
     });
   } catch (error) {
-    console.warn('Failed to load logo as base64:', error);
-    return null;
+    console.warn('Failed to load logo, using fallback:', error);
+    logoCache = FALLBACK_LOGO_BASE64;
+    return FALLBACK_LOGO_BASE64;
   }
 }
 
-// Set up logo references
-window.LOGO_BASE64 = LOGO_URL; // For HTML usage (fallback to URL)
+// Set up logo references with fallback
+window.LOGO_BASE64 = FALLBACK_LOGO_BASE64; // For HTML usage (reliable fallback)
 window.loadLogoAsBase64 = loadLogoAsBase64; // For PDF usage
 
 // NO automatic preloading - logo will be loaded only when needed for PDF generation
