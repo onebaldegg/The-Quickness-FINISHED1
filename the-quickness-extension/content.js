@@ -443,36 +443,42 @@
         const pageHeight = 210;
         const margin = 15;
         
-        // Logo top-left - Make it larger
+        // Logo top-left - Use fallback logo approach
         try {
           if (window.loadLogoAsBase64) {
-            // Load the actual logo image as base64
+            // Load the logo with fallback handling
             const logoBase64 = await window.loadLogoAsBase64();
             if (logoBase64) {
-              pdf.addImage(logoBase64, 'PNG', margin, margin, 98, 39); // 15% larger than previous (was 85x34)
+              // Extract image format and data from base64 string
+              const imageFormat = logoBase64.includes('data:image/png') ? 'PNG' : 
+                                logoBase64.includes('data:image/svg') ? 'SVG' : 'PNG';
+              pdf.addImage(logoBase64, imageFormat, margin, margin, 98, 39); // 15% larger than previous (was 85x34)
+              console.log('Logo added to PDF successfully');
             } else {
-              // Fallback to text if logo loading failed
-              pdf.setFontSize(24); // Increased from 18 to match larger logo
+              // Text fallback if logo completely fails
+              pdf.setFontSize(24);
               pdf.setFont(undefined, 'bold');
-              pdf.setTextColor(245, 158, 11); // Orange color similar to logo
-              pdf.text('THE QUICKNESS', margin, margin + 20); // Adjusted position
+              pdf.setTextColor(245, 158, 11); // Orange color
+              pdf.text('THE QUICKNESS', margin, margin + 20);
               pdf.setTextColor(0, 0, 0); // Reset to black
+              console.log('Used text fallback for logo');
             }
           } else {
-            // Fallback to text if logo function not available
-            pdf.setFontSize(24); // Increased from 18 to match larger logo
+            // Text fallback if logo function not available
+            pdf.setFontSize(24);
             pdf.setFont(undefined, 'bold');
-            pdf.setTextColor(245, 158, 11); // Orange color similar to logo
-            pdf.text('THE QUICKNESS', margin, margin + 20); // Adjusted position
+            pdf.setTextColor(245, 158, 11); // Orange color
+            pdf.text('THE QUICKNESS', margin, margin + 20);
             pdf.setTextColor(0, 0, 0); // Reset to black
+            console.log('Used text fallback for logo (no function)');
           }
         } catch (logoError) {
-          console.warn('Could not add logo image, using text fallback:', logoError);
+          console.warn('Logo loading failed, using text fallback:', logoError);
           // Fallback to text
-          pdf.setFontSize(24); // Increased from 18 to match larger logo
+          pdf.setFontSize(24);
           pdf.setFont(undefined, 'bold');
           pdf.setTextColor(245, 158, 11);
-          pdf.text('THE QUICKNESS', margin, margin + 20); // Adjusted position
+          pdf.text('THE QUICKNESS', margin, margin + 20);
           pdf.setTextColor(0, 0, 0);
         }
         
