@@ -59,10 +59,7 @@
       console.log('Waiting for jsPDF library to load...');
       
       while (!window.jspdf && attempts < 100) {
-        await new Promise(resolve => {
-          const timer = setTimeout(resolve, 100);
-          this.timers.push(timer); // Track timer for cleanup
-        });
+        await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
         
         if (attempts % 10 === 0) {
