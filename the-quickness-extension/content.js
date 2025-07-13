@@ -221,14 +221,39 @@
       const header = document.createElement('div');
       header.style.cssText = 'display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; background: transparent;';
       
-      // Create logo container
+      // Create logo container with immediate fallback
       const logoContainer = document.createElement('div');
-      logoContainer.style.cssText = 'display: inline-block;';
+      logoContainer.style.cssText = 'display: inline-block; background: #333; border-radius: 6px; padding: 8px 12px;';
       
+      // Try to create image logo first
       const logoImg = document.createElement('img');
       logoImg.src = window.LOGO_BASE64 || '';
       logoImg.alt = 'THE QUICKNESS';
       logoImg.style.cssText = 'height: 69px; width: auto; border-radius: 6px; display: block;';
+      
+      // Add error handling and text fallback for popup
+      logoImg.onerror = () => {
+        console.warn('Logo image failed to load in popup, using text fallback');
+        logoContainer.innerHTML = '';
+        logoContainer.style.cssText = 'display: inline-block; background: linear-gradient(45deg, #FF6B35, #F59E0B); border-radius: 6px; padding: 8px 12px; color: white; font-weight: bold; font-size: 14px; text-align: center; min-width: 120px;';
+        
+        const logoText = document.createElement('div');
+        logoText.textContent = 'THE QUICKNESS';
+        logoText.style.cssText = 'margin: 0; line-height: 1.2;';
+        
+        const subText = document.createElement('div');
+        subText.textContent = 'Screenshot & PDF Tool';
+        subText.style.cssText = 'font-size: 10px; opacity: 0.9; margin-top: 2px;';
+        
+        logoContainer.appendChild(logoText);
+        logoContainer.appendChild(subText);
+      };
+      
+      // Add successful load handler
+      logoImg.onload = () => {
+        console.log('Logo image loaded successfully in popup');
+      };
+      
       logoContainer.appendChild(logoImg);
       
       // Create button container
