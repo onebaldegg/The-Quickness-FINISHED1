@@ -8,7 +8,7 @@ chrome.action.onClicked.addListener((tab) => {
   // Capture the visible tab using Chrome's API for better image quality
   chrome.tabs.captureVisibleTab(null, {
     format: 'png',
-    quality: 100
+    quality: 95  // Reduced from 100% for better performance while maintaining quality
   }, (dataUrl) => {
     if (chrome.runtime.lastError) {
       console.error('Failed to capture tab:', chrome.runtime.lastError);
