@@ -786,24 +786,27 @@
         notification.textContent = `❌ ${message}`;
         document.body.appendChild(notification);
         
-        setTimeout(() => {
+        const timer1 = setTimeout(() => {
           if (notification.parentNode) {
             notification.style.opacity = '1';
             notification.style.transform = 'translateX(0)';
           }
         }, 10);
+        this.timers.push(timer1);
         
-        setTimeout(() => {
+        const timer2 = setTimeout(() => {
           if (notification.parentNode) {
             notification.style.opacity = '0';
             notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
+            const timer3 = setTimeout(() => {
               if (notification.parentNode) {
                 notification.remove();
               }
             }, 300);
+            this.timers.push(timer3);
           }
         }, 5000);
+        this.timers.push(timer2);
         
       } catch (error) {
         console.error('Error notification failed:', error);
