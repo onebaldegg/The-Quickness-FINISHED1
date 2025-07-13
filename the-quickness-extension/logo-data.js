@@ -1,5 +1,5 @@
 // Logo data using new THE QUICKNESS logo
-const LOGO_URL = 'https://i.imgur.com/WJUipGX.png';
+const LOGO_URL = 'https://i.imgur.com/kA9ixy8.png';
 
 // Function to convert image to base64
 async function loadLogoAsBase64() {
