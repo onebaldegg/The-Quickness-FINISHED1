@@ -205,16 +205,16 @@
       this.modal.className = 'tq-note-modal';
       this.modal.style.cssText = `
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: #BF77F6; border-radius: 8px; padding: 17px; 
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        z-index: 2147483647; min-width: 350px; max-width: 490px;
+        background: #BF77F6; border-radius: 9px; padding: 20px; 
+        box-shadow: 0 23px 69px rgba(0, 0, 0, 0.3);
+        z-index: 2147483647; min-width: 403px; max-width: 564px;
         border: 2px solid #333;
       `;
       
-      // Create logo using the actual logo image - with white background to neutralize logo's purple
+      // Create logo using the actual logo image - NO white background frame
       const logoHtml = `
-        <div style="background: white; padding: 5px; border-radius: 6px; display: inline-block;">
-          <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 60px; width: auto; border-radius: 6px; display: block;">
+        <div style="display: inline-block;">
+          <img src="${window.LOGO_BASE64 || ''}" alt="THE QUICKNESS" style="height: 69px; width: auto; border-radius: 6px; display: block;">
         </div>
       `;
       
