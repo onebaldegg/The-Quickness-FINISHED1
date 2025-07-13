@@ -359,25 +359,25 @@
       const saveBtn = this.modal.querySelector('#tq-save-btn');
       const textarea = this.modal.querySelector('#tq-note-input');
       
-      cancelBtn.addEventListener('click', () => {
-        this.closeModal();
-      });
-      
-      saveBtn.addEventListener('click', () => {
-        const note = textarea.value.trim();
-        this.savePDF(note);
-      });
-      
-      backdrop.addEventListener('click', () => {
-        this.closeModal();
-      });
-      
-      // ESC key to close
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && this.modal) {
-          this.closeModal();
+      // Store event handlers for cleanup
+      this.modalEventHandlers = {
+        cancel: () => this.closeModal(),
+        save: () => {
+          const note = textarea.value.trim();
+          this.savePDF(note);
+        },
+        backdrop: () => this.closeModal(),
+        keydown: (e) => {
+          if (e.key === 'Escape' && this.modal) {
+            this.closeModal();
+          }
         }
-      });
+      };
+      
+      cancelBtn.addEventListener('click', this.modalEventHandlers.cancel);
+      saveBtn.addEventListener('click', this.modalEventHandlers.save);
+      backdrop.addEventListener('click', this.modalEventHandlers.backdrop);
+      document.addEventListener('keydown', this.modalEventHandlers.keydown);
     }
 
     async savePDF(note) {
