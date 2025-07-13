@@ -828,6 +828,20 @@
         this.modalEventHandlers = null;
       }
     }
+
+    // Cleanup method to clear all timers and prevent memory leaks
+    cleanup() {
+      // Clear all tracked timers
+      this.timers.forEach(timer => clearTimeout(timer));
+      this.timers = [];
+      
+      // Close modal if open
+      this.closeModal();
+      
+      // Clear any remaining notifications
+      const notifications = document.querySelectorAll('.tq-success-notification, .tq-failure-notification');
+      notifications.forEach(notification => notification.remove());
+    }
   }
 
   window.theQuicknessExtension = new TheQuicknessExtension();
