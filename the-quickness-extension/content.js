@@ -726,27 +726,27 @@
         notification.textContent = `✓ ${message}`;
         document.body.appendChild(notification);
         
-        const timer1 = setTimeout(() => {
+        setTimeout(() => {
           if (notification.parentNode) {
             notification.style.opacity = '1';
             notification.style.transform = 'translateX(0)';
           }
         }, 10);
-        this.timers.push(timer1);
         
-        const timer2 = setTimeout(() => {
+        const removeTimer = setTimeout(() => {
           if (notification.parentNode) {
             notification.style.opacity = '0';
             notification.style.transform = 'translateX(100%)';
-            const timer3 = setTimeout(() => {
+            setTimeout(() => {
               if (notification.parentNode) {
                 notification.remove();
               }
             }, 300);
-            this.timers.push(timer3);
           }
         }, 3000);
-        this.timers.push(timer2);
+        
+        // Only track the main removal timer for cleanup
+        this.criticalTimers.push(removeTimer);
         
       } catch (error) {
         console.error('Notification failed:', error);
