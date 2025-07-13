@@ -125,17 +125,22 @@
         border: 2px solid #333;
       `;
       
-      indicator.innerHTML = `
-        <div style="
-          width: 20px;
-          height: 20px;
-          border: 3px solid transparent;
-          border-top: 3px solid white;
-          border-radius: 50%;
-          animation: tq-spin 1s linear infinite;
-        "></div>
-        <span>Capturing screenshot...</span>
+      // Create spinner element safely without innerHTML
+      const spinner = document.createElement('div');
+      spinner.style.cssText = `
+        width: 20px;
+        height: 20px;
+        border: 3px solid transparent;
+        border-top: 3px solid white;
+        border-radius: 50%;
+        animation: tq-spin 1s linear infinite;
       `;
+      
+      const text = document.createElement('span');
+      text.textContent = 'Capturing screenshot...';
+      
+      indicator.appendChild(spinner);
+      indicator.appendChild(text);
       
       // Add CSS animation
       if (!document.querySelector('#tq-spinner-style')) {
