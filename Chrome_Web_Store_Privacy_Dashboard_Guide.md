@@ -74,7 +74,7 @@
 
 ## Privacy Policy Information
 
-**Privacy Policy URL**: [Enter your website URL when ready]  
+**Privacy Policy URL**: https://www.onebaldegg.com/the-quickness  
 **Last Updated**: July 24, 2025  
 **Compliance Status**: ✅ Chrome Web Store Compliant
 
