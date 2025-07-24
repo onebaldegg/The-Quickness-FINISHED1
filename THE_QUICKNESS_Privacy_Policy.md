@@ -113,7 +113,7 @@ THE QUICKNESS is a Chrome browser extension that enables users to capture webpag
 - **No social media integrations**
 
 ### 4.3 External Resources
-- **Logo Assets**: Extension loads logo images from GitHub (https://github.com/onebaldegg/The-Quickness-FINISHED) for branding purposes only
+- **Logo Assets**: Extension loads logo images from GitHub (https://github.com/onebaldegg/The-Quickness-Icons) for branding purposes only
 - **No User Data**: Logo loading does not involve any user data transmission
 - **Fallback System**: Extension includes local fallback logos if external loading fails
 
