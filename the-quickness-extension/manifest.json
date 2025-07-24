@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Instant webpage screenshots to PDF with notes and bookmarks. Click extension icon to capture any page and save organized PDFs.",
   "author": "THE QUICKNESS Team",
-  "homepage_url": "https://github.com/onebaldegg/visual-assets-THE-QUICKNESS",
+  "homepage_url": "https://github.com/onebaldegg/The-Quickness-FINISHED",
   "permissions": [
     "activeTab",
     "scripting",
