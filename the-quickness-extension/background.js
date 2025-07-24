@@ -1,29 +1,60 @@
 /* global chrome */
 // THE QUICKNESS - Background Service Worker (Icon Click to Screenshot)
+// Optimized for activeTab permission - scripts injected dynamically
 
 // Handle extension icon clicks
-chrome.action.onClicked.addListener((tab) => {
-  console.log('THE QUICKNESS icon clicked, triggering screenshot');
+chrome.action.onClicked.addListener(async (tab) => {
+  console.log('THE QUICKNESS icon clicked, injecting scripts and triggering screenshot');
   
-  // Capture the visible tab using Chrome's API for better image quality
-  chrome.tabs.captureVisibleTab(null, {
-    format: 'png',
-    quality: 95  // Reduced from 100% for better performance while maintaining quality
-  }, (dataUrl) => {
-    if (chrome.runtime.lastError) {
-      console.error('Failed to capture tab:', chrome.runtime.lastError);
-      return;
-    }
-    
-    // Send the captured screenshot to content script
-    chrome.tabs.sendMessage(tab.id, {
-      action: 'showNoteModal',
-      screenshot: dataUrl,
-      url: tab.url
-    }).catch((error) => {
-      console.log('Content script not ready:', error);
+  try {
+    // Inject CSS and scripts dynamically (activeTab permission)
+    await chrome.scripting.insertCSS({
+      target: { tabId: tab.id },
+      files: ['content.css']
     });
-  });
+    
+    // Inject scripts in order
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['jspdf.umd.min.js']
+    });
+    
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['logo-data.js']
+    });
+    
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['content.js']
+    });
+    
+    // Small delay to ensure content script is ready
+    setTimeout(() => {
+      // Capture the visible tab using Chrome's API for better image quality
+      chrome.tabs.captureVisibleTab(null, {
+        format: 'png',
+        quality: 95  // Reduced from 100% for better performance while maintaining quality
+      }, (dataUrl) => {
+        if (chrome.runtime.lastError) {
+          console.error('Failed to capture tab:', chrome.runtime.lastError);
+          return;
+        }
+        
+        // Send the captured screenshot to content script
+        chrome.tabs.sendMessage(tab.id, {
+          action: 'showNoteModal',
+          screenshot: dataUrl,
+          url: tab.url
+        }).catch((error) => {
+          console.log('Content script not ready:', error);
+        });
+      });
+    }, 200);
+    
+  } catch (error) {
+    console.error('Error injecting scripts:', error);
+  }
 });
 
 // Handle messages from content script
