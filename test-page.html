@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE QUICKNESS Performance Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .performance-metrics {
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .external-image {
+            width: 200px;
+            height: 150px;
+            margin: 10px;
+            border: 1px solid #ccc;
+        }
+        .link-section a {
+            display: block;
+            margin: 5px 0;
+            color: #007cff;
+            text-decoration: none;
+        }
+        .link-section a:hover {
+            text-decoration: underline;
+        }
+        .heavy-content {
+            background: linear-gradient(45deg, #ff6b35, #f59e0b);
+            padding: 20px;
+            margin: 10px 0;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>THE QUICKNESS Chrome Extension Performance Test Page</h1>
+    
+    <div class="performance-metrics">
+        <h3>Performance Metrics</h3>
+        <p>Page Load Time: <span id="loadTime">Calculating...</span></p>
+        <p>DOM Ready Time: <span id="domTime">Calculating...</span></p>
+        <p>Extension Load Status: <span id="extensionStatus">Checking...</span></p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Section 1: Basic Content</h2>
+        <p>This is a basic test page for THE QUICKNESS Chrome extension performance testing. The extension should capture this content when the icon is clicked.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Section 2: External Images</h2>
+        <p>Testing external image loading performance:</p>
+        <img src="https://via.placeholder.com/200x150/ff6b35/ffffff?text=Image+1" alt="Test Image 1" class="external-image">
+        <img src="https://via.placeholder.com/200x150/f59e0b/ffffff?text=Image+2" alt="Test Image 2" class="external-image">
+        <img src="https://via.placeholder.com/200x150/bf77f6/ffffff?text=Image+3" alt="Test Image 3" class="external-image">
+    </div>
+
+    <div class="test-section link-section">
+        <h2>Test Section 3: Links for PDF Overlay Testing</h2>
+        <p>These links should be preserved in the PDF with clickable overlays:</p>
+        <a href="https://github.com/onebaldegg/The-Quickness-FINISHED">THE QUICKNESS GitHub Repository</a>
+        <a href="https://raw.githubusercontent.com/onebaldegg/The-Quickness-Icons/main/The%20Quickness%20Extension%20Icon%201024x10124.png">Extension Logo URL</a>
+        <a href="https://www.google.com">Google Search</a>
+        <a href="https://stackoverflow.com">Stack Overflow</a>
+        <a href="https://developer.mozilla.org">MDN Web Docs</a>
+    </div>
+
+    <div class="test-section heavy-content">
+        <h2>Test Section 4: Heavy Content</h2>
+        <p>This section contains heavy styling and gradients to test screenshot performance with complex CSS.</p>
+        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 5px; margin: 10px 0;">
+            <p>Nested content with transparency and complex styling.</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Section 5: Performance Test Controls</h2>
+        <button onclick="measureExtensionPerformance()">Measure Extension Performance</button>
+        <button onclick="simulateHeavyLoad()">Simulate Heavy Page Load</button>
+        <button onclick="clearPerformanceData()">Clear Performance Data</button>
+        
+        <div id="performanceResults" style="margin-top: 15px; padding: 10px; background: #e8f4fd; border-radius: 3px; display: none;">
+            <h4>Performance Results:</h4>
+            <div id="performanceData"></div>
+        </div>
+    </div>
+
+    <script>
+        // Performance measurement utilities
+        const performanceData = {
+            pageLoadStart: performance.now(),
+            domContentLoaded: null,
+            extensionDetected: false,
+            measurements: []
+        };
+
+        // Measure page load performance
+        document.addEventListener('DOMContentLoaded', function() {
+            performanceData.domContentLoaded = performance.now();
+            document.getElementById('domTime').textContent = Math.round(performanceData.domContentLoaded - performanceData.pageLoadStart) + 'ms';
+        });
+
+        window.addEventListener('load', function() {
+            const loadTime = performance.now() - performanceData.pageLoadStart;
+            document.getElementById('loadTime').textContent = Math.round(loadTime) + 'ms';
+            
+            // Check for extension presence
+            setTimeout(checkExtensionStatus, 1000);
+        });
+
+        function checkExtensionStatus() {
+            // Check if THE QUICKNESS extension is loaded
+            if (window.theQuicknessExtension) {
+                performanceData.extensionDetected = true;
+                document.getElementById('extensionStatus').textContent = 'Extension Loaded ✓';
+                document.getElementById('extensionStatus').style.color = 'green';
+            } else {
+                document.getElementById('extensionStatus').textContent = 'Extension Not Detected ❌';
+                document.getElementById('extensionStatus').style.color = 'red';
+            }
+        }
+
+        function measureExtensionPerformance() {
+            const results = document.getElementById('performanceResults');
+            const data = document.getElementById('performanceData');
+            
+            results.style.display = 'block';
+            
+            let html = '<ul>';
+            html += `<li>Page Load Time: ${Math.round(performance.now() - performanceData.pageLoadStart)}ms</li>`;
+            html += `<li>DOM Ready Time: ${performanceData.domContentLoaded ? Math.round(performanceData.domContentLoaded - performanceData.pageLoadStart) + 'ms' : 'Not measured'}</li>`;
+            html += `<li>Extension Status: ${performanceData.extensionDetected ? 'Loaded' : 'Not Detected'}</li>`;
+            html += `<li>Memory Usage: ${navigator.deviceMemory ? navigator.deviceMemory + 'GB' : 'Unknown'}</li>`;
+            html += `<li>Connection Type: ${navigator.connection ? navigator.connection.effectiveType : 'Unknown'}</li>`;
+            html += `<li>User Agent: ${navigator.userAgent.includes('Chrome') ? 'Chrome Browser' : 'Other Browser'}</li>`;
+            html += '</ul>';
+            
+            data.innerHTML = html;
+        }
+
+        function simulateHeavyLoad() {
+            // Add more heavy content to test performance under load
+            const heavyDiv = document.createElement('div');
+            heavyDiv.innerHTML = `
+                <div style="background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); padding: 20px; margin: 10px;">
+                    <h3>Heavy Load Test Content</h3>
+                    <p>This content was added dynamically to test extension performance under heavy DOM load.</p>
+                </div>
+            `;
+            document.body.appendChild(heavyDiv);
+            
+            // Add multiple images
+            for (let i = 0; i < 5; i++) {
+                const img = document.createElement('img');
+                img.src = `https://via.placeholder.com/300x200/random/ffffff?text=Heavy+Image+${i+1}`;
+                img.style.margin = '10px';
+                img.style.width = '300px';
+                img.style.height = '200px';
+                document.body.appendChild(img);
+            }
+            
+            alert('Heavy content added. Now test the extension performance.');
+        }
+
+        function clearPerformanceData() {
+            document.getElementById('performanceResults').style.display = 'none';
+            performanceData.measurements = [];
+            
+            // Remove heavy content
+            const heavyElements = document.querySelectorAll('div[style*="linear-gradient"]');
+            heavyElements.forEach(el => {
+                if (el.textContent.includes('Heavy Load Test Content')) {
+                    el.remove();
+                }
+            });
+            
+            const heavyImages = document.querySelectorAll('img[src*="Heavy+Image"]');
+            heavyImages.forEach(img => img.remove());
+        }
+
+        // Console performance monitoring
+        console.log('THE QUICKNESS Performance Test Page Loaded');
+        console.log('Performance API available:', !!window.performance);
+        console.log('Navigation timing:', performance.navigation);
+        console.log('Timing data:', performance.timing);
+    </script>
+</body>
+</html>
