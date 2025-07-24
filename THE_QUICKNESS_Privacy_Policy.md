@@ -223,7 +223,7 @@ This privacy policy complies with Google Chrome Web Store Developer Program Poli
 **Extension Name**: THE QUICKNESS  
 **Developer**: THE QUICKNESS Team  
 **GitHub Repository**: https://github.com/onebaldegg/The-Quickness-FINISHED  
-**Privacy Policy URL**: [To be updated when hosted]  
+**Privacy Policy URL**: https://www.onebaldegg.com/the-quickness  
 
 For privacy questions, technical support, or to exercise your privacy rights, please contact us through our GitHub repository.
 
