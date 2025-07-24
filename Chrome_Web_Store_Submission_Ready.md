@@ -98,6 +98,7 @@ zip -r "THE_QUICKNESS_v1.0.0.zip" .
 - **Summary**: Instant webpage screenshots to PDF with notes and bookmarks
 - **Category**: Productivity
 - **Language**: English (US)
+- **Privacy Policy**: https://www.onebaldegg.com/the-quickness
 
 ---
 
