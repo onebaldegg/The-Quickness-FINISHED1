@@ -149,5 +149,6 @@ Ready to submit! 🚀
 ---
 
 *Updated: July 24, 2025*  
+*GitHub Repository: https://github.com/onebaldegg/The-Quickness-FINISHED*  
 *Chrome Store Compliance: 100% ✅*  
 *Ready for Publication: YES 🎯*
