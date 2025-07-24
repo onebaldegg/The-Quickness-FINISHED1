@@ -179,7 +179,7 @@ For users in the European Union, our legal basis for processing personal data is
 
 ### 10.2 Contact Information
 For privacy-related questions or concerns:
-- **GitHub**: https://github.com/onebaldegg/visual-assets-THE-QUICKNESS
+- **GitHub**: https://github.com/onebaldegg/The-Quickness-FINISHED
 - **Response Time**: We aim to respond to privacy inquiries within 30 days
 
 ---
