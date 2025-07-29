@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "THE QUICKNESS",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Instant webpage screenshots to PDF with notes and bookmarks. Click extension icon to capture any page and save organized PDFs.",
   "author": "THE QUICKNESS Team",
   "homepage_url": "https://github.com/onebaldegg/The-Quickness-FINISHED",
@@ -9,7 +9,6 @@
     "activeTab",
     "scripting",
     "downloads",
-    "storage",
     "bookmarks"
   ],
   "background": {
